@@ -24,6 +24,10 @@
 		<footer class="mt-12 text-center text-xs text-gray-600 tracking-wider">
 			<p>&copy; {new Date().getFullYear()} NoTracer.com</p>
 			<p class="mt-1">Built for privacy. Zero logs policy.</p>
+			<div class="mt-4 flex gap-4 justify-center">
+				<a href="/about" class="hover:text-neon transition-colors underline decoration-gray-800 underline-offset-4">About</a>
+				<a href="https://github.com/roymercenteno7/notracer" target="_blank" class="hover:text-neon transition-colors underline decoration-gray-800 underline-offset-4">Source Code</a>
+			</div>
 		</footer>
 	</div>
 </div>
