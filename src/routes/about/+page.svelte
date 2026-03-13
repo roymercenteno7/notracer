@@ -54,6 +54,20 @@
 			</p>
 		</section>
 
+		<section class="border-t border-gray-800 pt-8 mt-8 mb-12">
+			<h3 class="text-neon uppercase mb-4">Contact / Comms:</h3>
+			<ul class="space-y-4 font-mono text-sm md:text-base">
+				<li class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+					<span class="text-gray-500 w-48">[ Support / Feedback ]</span>
+					<a href="mailto:hello@notracer.com" class="text-neon inline-block hover:bg-neon hover:text-black px-2 py-0.5 transition-colors">> hello@notracer.com</a>
+				</li>
+				<li class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+					<span class="text-gray-500 w-48">[ Legal / Technical ]</span>
+					<a href="mailto:admin@notracer.com" class="text-neon inline-block hover:bg-neon hover:text-black px-2 py-0.5 transition-colors">> admin@notracer.com</a>
+				</li>
+			</ul>
+		</section>
+
 		<FaqAccordion />
 
 		<div class="text-center pt-8 border-t border-gray-800/50 mt-12">
