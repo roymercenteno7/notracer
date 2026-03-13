@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # El motor de almacenamiento para links y contadores
+  notracer-db:
+    image: redis:7-alpine
+    container_name: notracer_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+  # (Opcional) Una interfaz visual para que veas los links guardados
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: notracer_viz
+    ports:
+      - "8001:8001"
+    depends_on:
+      - notracer-db
+
+volumes:
+  redis_data:

@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "Space Mono", "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-neon: #00FF41;
+  --color-neon-hover: #00CC33;
+  --color-black: #000000;
+  --color-gray-900: #0a0a0a;
+  --color-gray-800: #1a1a1a;
+}
+
+@layer base {
+  body {
+    background-color: #000000;
+    color: #e5e5e5;
+    font-family: var(--font-mono);
+  }
+}
