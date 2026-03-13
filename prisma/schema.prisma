@@ -21,11 +21,13 @@ model User {
 }
 
 model Link {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String    @id @default(cuid())
+  slug        String    @unique
   originalUrl String
   cleanedUrl  String
+  clicks      Int       @default(0)
+  expiresAt   DateTime?
   userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
+  user        User?     @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
 }

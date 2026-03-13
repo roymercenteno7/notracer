@@ -86,7 +86,7 @@
 						<label for="customSlug" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Custom Alias (Optional)</label>
 						<div class="relative flex items-center border border-gray-800 bg-gray-900 focus-within:border-neon transition-colors rounded-sm overflow-hidden">
 							<span class="px-3 text-gray-500 border-r border-gray-800 font-mono text-sm bg-black">/</span>
-							<input type="text" id="customSlug" name="customSlug" placeholder="my-secure-link" pattern="[a-zA-Z0-9-_]+" class="w-full bg-transparent text-gray-200 px-3 py-3 outline-none font-mono text-sm" />
+							<input type="text" id="customSlug" name="customSlug" placeholder="my-secure-link" pattern="[a-zA-Z0-9_-]+" class="w-full bg-transparent text-gray-200 px-3 py-3 outline-none font-mono text-sm" />
 						</div>
 					</div>
 					

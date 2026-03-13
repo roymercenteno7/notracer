@@ -5,6 +5,9 @@
 
 	let { form } = $props<{ form: ActionData }>();
 	let loading = $state(false);
+	
+	import { PUBLIC_BETA_OPEN } from '$env/static/public';
+	const isBetaOpen = PUBLIC_BETA_OPEN === 'true';
 </script>
 
 <div class="w-full flex-col flex items-center justify-center min-h-[70vh]">
@@ -31,7 +34,15 @@
 				</div>
 			{/if}
 
-			{#if form?.success}
+			{#if !isBetaOpen}
+				<div class="text-yellow-500 border border-yellow-900/50 bg-yellow-950/30 px-4 py-6 rounded font-mono text-sm text-center space-y-4">
+					<p>[SYSTEM_NOTICE] PUBLIC REGISTRATION IS CURRENTLY OFFLINE.</p>
+					<p class="text-xs text-gray-500">Only authorized personnel with existing credentials can access the system at this time.</p>
+					<div class="pt-4">
+						<a href="/login" class="bg-gray-900 border border-gray-800 hover:border-neon text-gray-300 hover:text-neon px-6 py-2 transition-colors uppercase font-bold text-xs inline-block">ACCESS_LOGIN_PORTAL →</a>
+					</div>
+				</div>
+			{:else if form?.success}
 				<div class="text-neon border border-neon/50 bg-neon/10 px-4 py-3 rounded font-mono text-sm text-center">
 					[SUCCESS] {form.message} <br/> <a href="/login" class="underline hover:bg-neon hover:text-black">PROCEED TO LOGIN_</a>
 				</div>

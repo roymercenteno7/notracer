@@ -50,7 +50,7 @@ export const actions: Actions = {
 
         const data = await request.formData();
         const originalUrl = data.get('url')?.toString() || '';
-        let customSlug = data.get('customSlug')?.toString().trim();
+        let customSlug = data.get('customSlug')?.toString()?.trim();
         const expirationDays = data.get('expiration')?.toString(); // Optional: "1", "7", "30", or "never"
 
         if (!originalUrl) {
@@ -64,12 +64,12 @@ export const actions: Actions = {
         }
 
         // Clean the URL
-        const { cleanedUrl } = cleanUrl(originalUrl);
+        const { url: cleanedUrl } = cleanUrl(originalUrl);
 
         // Determine Slug
         let finalSlug = customSlug;
         if (customSlug) {
-            if (!/^[a-zA-Z0-9-_]+$/.test(customSlug)) {
+            if (!/^[a-zA-Z0-9\-_]+$/.test(customSlug)) {
                 return { error: 'Custom alias can only contain letters, numbers, hyphens, and underscores.' };
             }
             // Check availability in DB and Redis
@@ -86,7 +86,7 @@ export const actions: Actions = {
         // Database Persistence (User Links)
         const newLink = await db.link.create({
             data: {
-                slug: finalSlug,
+                slug: finalSlug!,
                 originalUrl: originalUrl,
                 cleanedUrl: cleanedUrl,
                 userId: locals.user.id
@@ -106,7 +106,7 @@ export const actions: Actions = {
         return {
             success: true,
             newLink: newLink,
-            shortlink: `https://notracer.com/${finalSlug}`
+            shortlink: `${(new URL(request.url)).origin}/${finalSlug}`
         };
     }
 };

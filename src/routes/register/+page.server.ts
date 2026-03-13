@@ -18,6 +18,10 @@ export const actions = {
         const password = data.get('password')?.toString();
         const turnstileToken = data.get('cf-turnstile-response')?.toString();
 
+        if (process.env.PUBLIC_BETA_OPEN !== 'true') {
+            return fail(403, { email, error: 'Public registration is currently offline.' });
+        }
+
         if (!email || !password || password.length < 6) {
             return fail(400, { email, error: 'Invalid email or password (min 6 chars)' });
         }

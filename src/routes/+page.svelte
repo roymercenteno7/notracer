@@ -81,10 +81,17 @@
 				type="text" 
 				name="customSlug" 
 				placeholder="custom-slug (optional)" 
+				pattern="[a-zA-Z0-9_-]+"
 				class="w-full bg-transparent text-gray-300 placeholder-gray-600 px-3 outline-none font-mono text-sm"
 				autocomplete="off"
 				spellcheck="false"
 			/>
+		</div>
+		{:else}
+		<div class="mt-4 text-center">
+			<p class="text-[10px] text-gray-700 font-mono uppercase tracking-widest">
+				> <a href="/login" class="text-gray-600 hover:text-neon underline">Login</a> or <a href="/register" class="text-gray-600 hover:text-neon underline">Register</a> to unlock custom aliases & non-expiring links.
+			</p>
 		</div>
 		{/if}
 	</form>

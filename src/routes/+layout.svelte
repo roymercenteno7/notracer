@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
-	let { children } = $props();
+	import type { LayoutData } from './$types';
+	let { children, data } = $props<{ children: any, data: LayoutData }>();
 </script>
 
 <div class="min-h-screen w-full flex flex-col items-center justify-center p-4 selection:bg-neon selection:text-black">
@@ -25,7 +26,13 @@
 			<p>&copy; {new Date().getFullYear()} NoTracer.com</p>
 			<p class="mt-1">Built for privacy. Zero logs policy.</p>
 			<p class="mt-2 text-gray-700 font-mono">System notifications are sent via <span class="text-gray-500">noreply@notracer.com</span></p>
-			<div class="mt-4 flex gap-4 justify-center">
+			<div class="mt-4 flex gap-4 justify-center items-center">
+				{#if data.user}
+					<a href="/dashboard" class="text-neon hover:underline font-bold text-xs uppercase tracking-tighter">[ DASHBOARD ]</a>
+				{:else}
+					<a href="/login" class="hover:text-neon transition-colors underline decoration-gray-800 underline-offset-4">Login</a>
+					<a href="/register" class="hover:text-neon transition-colors underline decoration-gray-800 underline-offset-4">Register</a>
+				{/if}
 				<a href="/about" class="hover:text-neon transition-colors underline decoration-gray-800 underline-offset-4">About</a>
 			</div>
 		</footer>
