@@ -1,3 +1,7 @@
+<script lang="ts">
+	import FaqAccordion from './FaqAccordion.svelte';
+</script>
+
 <svelte:head>
 	<title>About | NoTracer</title>
 </svelte:head>
@@ -50,7 +54,9 @@
 			</p>
 		</section>
 
-		<div class="text-center pt-8 border-t border-gray-800/50">
+		<FaqAccordion />
+
+		<div class="text-center pt-8 border-t border-gray-800/50 mt-12">
 			<p class="text-neon uppercase tracking-widest font-bold">
 				// SHARE THE CONTENT, NOT YOUR DATA.
 			</p>
