@@ -24,6 +24,10 @@
 	}
 </script>
 
+<div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
+	[ SYSTEM STATUS: BETA 1.0 ]
+</div>
+
 <div class="w-full flex-col flex items-center gap-12">
 	<div class="text-center space-y-4">
 		<div class="text-6xl md:text-8xl font-black text-neon animate-pulse tracking-tighter">
