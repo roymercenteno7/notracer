@@ -1,42 +1,64 @@
-# sv
+<div align="center">
+  <img src="src/lib/assets/favicon.svg" width="80" alt="NoTracer Logo">
+  <h1>NoTracer 🟢</h1>
+  <p><strong>El acortador de URLs Anti-Rastreo definitivo con estética Cyber-Terminal.</strong></p>
+</div>
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+---
 
-## Creating a project
+NoTracer (mvp) es una herramienta web extrema de privacidad. Limpia de raíz los molestos parámetros de rastreo (`utm_*`, `fbclid`, `gclid`, IDs de afiliados ocultos) en URLs de redes sociales y comercio electrónico, devolviendo un enlace corto y totalmente sanitizado. 
 
-If you're seeing this, you've probably already done this step. Congrats!
+Desarrollado end-to-end con SvelteKit, Prisma, PostgreSQL y Upstash (Redis) para trabajar nativamente bajo **Edge Serverless en Vercel**.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## 🚀 Características (Phase 2)
 
-To recreate this project with the same configuration:
+- **Estética Cyber-Terminal**: CSS Vanilla minimalista 100% Hacker (`#00FF41` puro sobre negro). 
+- **Deep Clean Engine**: Blacklist riguroso de parámetros de rastreo (+50 reglas soportadas) para Amazon, Meta, Google, TikTok, MercadoLibre y AliExpress.
+- **Micro-Redirección LFU/LRU**: Cache rápido en **Upstash Redis** para resolución de `/[slug]` en microsegundos. 
+- **Gestión de Cuentas (BETA)**: Login / Registro de usuarios con `bcrypt` y persistencia de links.
+- **Expiración Dinámica**: Los links de visita anónima **se auto-destruyen en 48 horas**. Los links de usuarios registrados son perpetuos.
+- **Bot-Shield Integration**: Protegido robustamente con **Cloudflare Turnstile** para evitar spam abuse.
+- **Copy-to-Clipboard Automático**: One-click zero-friction UI.
 
-```sh
-# recreate this project
-npx sv@0.12.5 create --template minimal --types ts --install npm ./
-```
+## 🛠 Stack Tecnológico
 
-## Developing
+- **Frontend SSR**: [SvelteKit 2](https://kit.svelte.dev/)
+- **Styling**: [TailwindCSS v4](https://tailwindcss.com/)
+- **Database ORM**: [Prisma Client](https://www.prisma.io/) (PostgreSQL via Neon)
+- **Fast Global Cache**: [@upstash/redis](https://upstash.com/)
+- **Security Check**: Cloudflare Turnstile
+- **Deployment Platform**: Vercel (Edge Serverless)
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## 📦 Instalación Local
 
-```sh
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/roymercenteno7/notracer.git
+cd notracer
+
+# 2. Instalar dependencias
+npm install
+npm run build # Dispara la compilación del cliente nativo de Prisma (v6.4.1)
+
+# 3. Configurar Entorno
+cp .env.example .env
+# IMPORTANTE: Reemplaza las variables DATABASE_URL y UPSTASH_REST en el archivo .env con tus credenciales.
+
+# 4. Inicializar Base de Datos
+npx prisma db push
+
+# 5. Ejecutar la terminal
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## ☁️ Despliegue en Vercel
 
-To create a production version of your app:
+NoTracer está pre-configurado para desplegarse fluidamente en Vercel usando `@sveltejs/adapter-vercel`.
 
-```sh
-npm run build
-```
+1. Importa el Repositorio de GitHub desde tu cuenta de Vercel.
+2. Ve a las configuraciones del entorno (`Settings > Environment Variables`).
+3. Añade absolutamente todas tus credenciales (Db de Neon, Redis de Upstash, Secretos de Cloudflare).
+4. El script `postinstall` (`prisma generate`) se asegura que el Edge API tenga acceso a PostgreSQL automáticamente sin configuración extra en el pipeline CICD de Vercel.
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+---
+> Construido de cero buscando limpiar la web. Zero Tracking, Full Privacy.
