@@ -1,22 +1,27 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>NoTracer | Cyber-Clean Shortener</title>
-		
-		<!-- Google Fonts: Space Mono -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-		
-		<!-- Cloudflare Turnstile -->
-		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-		
-		%sveltekit.head%
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+
+<head>
+	<meta charset="utf-8" />
+	<link rel="icon" type="image/svg+xml"
+		href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000000' /%3E%3Cpath d='M 9 24 V 8 L 23 24 V 11' fill='none' stroke='%2300FF41' stroke-width='4' stroke-linecap='square' stroke-linejoin='miter' /%3E%3Crect x='21' y='8' width='4' height='4' fill='%2300FF41' /%3E%3C/svg%3E">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>NoTracer | Cyber-Clean Shortener</title>
+
+	<!-- Google Fonts: Space Mono -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+		rel="stylesheet">
+
+	<!-- Cloudflare Turnstile -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+	%sveltekit.head%
+</head>
+
+<body data-sveltekit-preload-data="hover">
+	<div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>
