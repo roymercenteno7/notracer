@@ -55,8 +55,18 @@
     align-items: center;
     justify-content: space-between;
     font-size: 11px;
-    border-bottom: 1px solid #111;
-    padding-bottom: 4px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+}
+
+.balloon-close {
+    color: #888;
+    transition: color 0.2s;
+}
+
+.balloon-close:hover {
+    color: #ff0041;
 }
 
 .trash-container {
