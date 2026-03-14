@@ -1,12 +1,13 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import bcrypt from 'bcrypt';
 import { env } from '$env/dynamic/public';
 import { env as secretEnv } from '$env/dynamic/private';
+import { redis } from '$lib/server/redis';
+import { sendOTPEmail } from '$lib/server/email';
+import { nanoid } from 'nanoid';
 
 export const load: PageServerLoad = async ({ locals }) => {
-    // If the user is already logged in, redirect them
     if (locals.user) {
         throw redirect(302, '/');
     }
@@ -18,18 +19,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-    default: async ({ request }) => {
+    sendCode: async ({ request }) => {
         const data = await request.formData();
         const email = data.get('email')?.toString();
-        const password = data.get('password')?.toString();
         const turnstileToken = data.get('cf-turnstile-response')?.toString();
 
         if (env.PUBLIC_BETA_OPEN !== 'true') {
             return fail(403, { email, error: 'Public registration is currently offline.' });
         }
 
-        if (!email || !password || password.length < 6) {
-            return fail(400, { email, error: 'Invalid email or password (min 6 chars)' });
+        if (!email || !email.includes('@')) {
+            return fail(400, { email, error: 'Invalid email address.' });
         }
 
         if (!turnstileToken) {
@@ -52,21 +52,67 @@ export const actions = {
                 return fail(400, { email, error: 'Security challenge failed.' });
             }
 
-            const existingUser = await db.user.findUnique({ where: { email } });
-            if (existingUser) {
-                return fail(400, { email, error: 'Email already registered' });
+            // Generate 6-digit code
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Store in Redis (10 min TTL)
+            await redis.set(`notracer:otp:${email}`, code, { ex: 600 });
+
+            // Send Email
+            await sendOTPEmail(email, code);
+
+            return { success: true, email, step: 'verify' };
+        } catch (error: any) {
+            console.error('OTP Request Error:', error);
+            return fail(500, { email, error: 'Failed to send access code. Try again later.' });
+        }
+    },
+
+    verifyCode: async ({ request, cookies }) => {
+        const data = await request.formData();
+        const email = data.get('email')?.toString();
+        const code = data.get('code')?.toString();
+
+        if (!email || !code) {
+            return fail(400, { email, error: 'Missing email or code.' });
+        }
+
+        try {
+            const storedCode = await redis.get(`notracer:otp:${email}`);
+
+            if (!storedCode || storedCode !== code) {
+                return fail(400, { email, error: 'Invalid or expired access code.' });
             }
 
-            const passwordHash = await bcrypt.hash(password, 10);
+            // Code is valid, remove it
+            await redis.del(`notracer:otp:${email}`);
 
-            await db.user.create({
-                data: { email, passwordHash }
+            // Find or Register User
+            let user = await db.user.findUnique({ where: { email } });
+
+            if (!user) {
+                user = await db.user.create({
+                    data: { email }
+                });
+            }
+
+            // Create Session
+            const sessionId = nanoid(32);
+            await redis.set(`notracer:session:${sessionId}`, user.id, { ex: 60 * 60 * 24 * 7 }); // 7 days
+
+            cookies.set('session', sessionId, {
+                path: '/',
+                httpOnly: true,
+                sameSite: 'lax',
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 * 7
             });
 
-            return { success: true, message: 'Account registered.' };
+            throw redirect(302, '/dashboard');
         } catch (error: any) {
-            console.error('Registration Error:', error);
-            return fail(500, { email, error: 'Internal server error during registration.' });
+            if (error.status === 302) throw error;
+            console.error('OTP Verification Error:', error);
+            return fail(500, { email, error: 'Verification failed. Try again.' });
         }
     }
 } satisfies Actions;

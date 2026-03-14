@@ -11,11 +11,16 @@ export const load: PageServerLoad = async ({ locals }) => {
         throw redirect(302, '/login');
     }
 
-    // Data Fetching: Fetch all links associated with the current user_id
-    // Order by creation date descending
+    // Auto-Purge Logic: Only show links from the last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
     const links = await db.link.findMany({
         where: {
-            userId: locals.user.id
+            userId: locals.user.id,
+            createdAt: {
+                gte: thirtyDaysAgo
+            }
         },
         orderBy: {
             createdAt: 'desc'
