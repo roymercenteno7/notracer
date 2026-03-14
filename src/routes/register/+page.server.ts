@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { PUBLIC_BETA } from '$env/static/public';
+import { PUBLIC_BETA, PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 import { env as secretEnv } from '$env/dynamic/private';
 import { redis } from '$lib/server/redis';
 import { sendOTPEmail } from '$lib/server/email';
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     // Using a safe fallback if the site key isn't public yet
     return {
         isBetaOpen: PUBLIC_BETA === 'true',
-        turnstileKey: '1x00000000000000000000AA' // Default for development, should be overridden by Vercel env
+        turnstileKey: PUBLIC_TURNSTILE_SITE_KEY
     };
 };
 
