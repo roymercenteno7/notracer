@@ -34,14 +34,14 @@
 				[ COMMAND CENTER ]
 			</h2>
 			<p class="text-gray-500 font-mono mt-2 text-sm">
-				> Authenticated as: <span class="text-gray-300">{data.user.email}</span>
+				> Authenticated as: <span class="text-gray-300">{data?.user?.email || 'Unknown User'}</span>
 			</p>
 		</div>
 		
 		<div class="flex gap-4 font-mono text-sm">
 			<div class="bg-gray-900 border border-gray-800 px-4 py-2 text-center rounded-sm">
 				<div class="text-gray-500 uppercase text-xs mb-1">Active Relays</div>
-				<div class="text-neon font-bold">{data.links.length}</div>
+				<div class="text-neon font-bold">{data?.links?.length || 0}</div>
 			</div>
 			
 			<form action="/logout" method="POST">
@@ -137,7 +137,7 @@
 			<span class="text-gray-600">></span> System Logs & Relays
 		</h3>
 		
-		{#if data.links.length === 0}
+		{#if !data?.links || data.links.length === 0}
 			<div class="border border-dashed border-gray-800 p-12 text-center text-gray-500 font-mono text-sm">
 				[ NO RELAYS DETECTED IN DATABASE ]<br>
 				Initiate a sanitization request above to begin tracking.
@@ -162,7 +162,7 @@
 									{link.cleanedUrl}
 								</td>
 								<td class="px-6 py-4 text-right text-gray-400 font-bold">
-									{link.clicks.toLocaleString()}
+									{(link.clicks || 0).toLocaleString()}
 								</td>
 								<td class="px-6 py-4 text-right text-gray-500 text-xs">
 									{formatDate(link.createdAt)}

@@ -35,7 +35,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
         console.log(`[DASHBOARD_TRACE] Found ${links.length} links in DB`);
 
-        let linksWithStats = [];
+        let linksWithStats: any[] = [];
 
         if (links.length > 0) {
             console.log('[DASHBOARD_TRACE] Fetching click counts from Redis');
@@ -72,10 +72,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     } catch (err: any) {
         console.error('[DASHBOARD_TRACE] FATAL ERROR IN DASHBOARD LOAD:', err);
         // We throw a SvelteKit error instead of a generic 500 to see if we can get more info
-        throw error(500, {
-            message: 'Internal Database or Cache Error',
-            code: err.code || 'UNKNOWN'
-        });
+        throw error(500, 'Internal Database or Cache Error - ' + (err.code || 'UNKNOWN'));
     }
 };
 
