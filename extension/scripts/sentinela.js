@@ -1,6 +1,7 @@
 /**
  * NoTracer Sentinela - Content Script
  * Real-time tracking link detector and cleaner.
+ * Stability Update: Added hide grace period for better UX.
  */
 
 (function () {
@@ -37,29 +38,48 @@
     document.body.appendChild(sentinelBtn);
 
     let activeLink = null;
+    let hideTimeout = null;
 
     document.addEventListener('mouseover', (e) => {
         const link = e.target.closest('a');
+        const isBtn = e.target.closest('#notracer-sentinela-btn');
+
         if (link && link.href && hasTrackers(link.href)) {
+            clearTimeout(hideTimeout);
             activeLink = link;
             showButton(link);
-        } else if (!e.target.closest('#notracer-sentinela-btn')) {
-            hideButton();
+        } else if (isBtn) {
+            clearTimeout(hideTimeout);
+        } else {
+            startHideTimeout();
         }
     });
 
     function showButton(link) {
         const rect = link.getBoundingClientRect();
-        sentinelBtn.style.top = `${window.scrollY + rect.top - 30}px`;
+        // Move slightly closer to the link to avoid "empty gaps"
+        sentinelBtn.style.top = `${window.scrollY + rect.top - 18}px`; // Closer than -20
         sentinelBtn.style.left = `${window.scrollX + rect.left + rect.width / 2 - 12}px`;
         sentinelBtn.style.display = 'flex';
     }
 
-    function hideButton() {
-        if (!sentinelBtn.matches(':hover')) {
-            sentinelBtn.style.display = 'none';
-        }
+    function startHideTimeout() {
+        if (hideTimeout) clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            // Re-check if we are hovering the button or the link
+            if (!sentinelBtn.matches(':hover')) {
+                sentinelBtn.style.display = 'none';
+            }
+        }, 800); // Increased to 800ms for more comfort
     }
+
+    sentinelBtn.addEventListener('mouseenter', () => {
+        clearTimeout(hideTimeout);
+    });
+
+    sentinelBtn.addEventListener('mouseleave', () => {
+        startHideTimeout();
+    });
 
     sentinelBtn.addEventListener('click', async () => {
         if (!activeLink) return;
@@ -68,7 +88,6 @@
         sentinelBtn.classList.add('loading');
 
         try {
-            // NoTracer API Endpoint
             const API_ORIGIN = 'https://notracer.com';
 
             const response = await fetch(`${API_ORIGIN}/api/links/create`, {
