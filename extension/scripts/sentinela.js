@@ -1,56 +1,116 @@
 /**
  * NoTracer Sentinela - Content Script
- * Real-time tracking link detector and cleaner.
- * Interaction Update: Delegating fetch to background script to bypass CORS.
+ * X-Ray Vision Update: Implements Shadow DOM Modal and URL Scanner.
  */
 
 (function () {
     const GLOBAL_TRACKERS = [
         'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
-        'utm_id', 'fbclid', 'gclid', 'msclkid', 'igsh', 'mibextid'
+        'utm_id', 'fbclid', 'gclid', 'msclkid', 'igsh', 'mibextid', 'si', 'ref_', 'qid'
     ];
 
     const DOMAIN_PARAMS = {
-        'amazon': ['ref', 'ref_', '_encoding', 'qid', 'keywords'],
+        'amazon': ['ref', 'ref_', '_encoding', 'qid', 'keywords', 'dib', 'dib_tag'],
         'youtube': ['si', 'pp', 'feature'],
         'tiktok': ['_r', '_t', 'u_code'],
         'spotify': ['si']
     };
 
-    function hasTrackers(urlStr) {
+    function analyzeURL(urlStr) {
         try {
             const url = new URL(urlStr);
-            const params = Array.from(url.searchParams.keys()).map(k => k.toLowerCase());
-            if (params.some(p => GLOBAL_TRACKERS.includes(p))) return true;
-            for (const [domain, list] of Object.entries(DOMAIN_PARAMS)) {
-                if (url.hostname.includes(domain)) {
-                    if (params.some(p => list.includes(p))) return true;
+            const params = [];
+            const hostname = url.hostname.toLowerCase();
+
+            url.searchParams.forEach((value, key) => {
+                const lowerKey = key.toLowerCase();
+                let isTracker = false;
+
+                if (GLOBAL_TRACKERS.includes(lowerKey)) {
+                    isTracker = true;
+                } else {
+                    for (const [domain, list] of Object.entries(DOMAIN_PARAMS)) {
+                        if (hostname.includes(domain)) {
+                            if (list.includes(lowerKey) || list.some(p => lowerKey.startsWith(p))) {
+                                isTracker = true;
+                                break;
+                            }
+                        }
+                    }
                 }
-            }
-            return false;
-        } catch (e) { return false; }
+                params.push({ key, value, status: isTracker ? 'TRACKER' : 'CLEAN' });
+            });
+
+            return params;
+        } catch (e) { return []; }
     }
 
+    function getCleanURL(urlStr) {
+        try {
+            const url = new URL(urlStr);
+            const paramsToDelete = [];
+            const hostname = url.hostname.toLowerCase();
+
+            url.searchParams.forEach((value, key) => {
+                const lowerKey = key.toLowerCase();
+                let isTracker = false;
+                if (GLOBAL_TRACKERS.includes(lowerKey)) isTracker = true;
+                else {
+                    for (const [domain, list] of Object.entries(DOMAIN_PARAMS)) {
+                        if (hostname.includes(domain)) {
+                            if (list.includes(lowerKey) || list.some(p => lowerKey.startsWith(p))) {
+                                isTracker = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (isTracker) paramsToDelete.push(key);
+            });
+
+            paramsToDelete.forEach(p => url.searchParams.delete(p));
+            return url.toString();
+        } catch (e) { return urlStr; }
+    }
+
+    // UI ELEMENTS
     let sentinelBtn = document.createElement('div');
     sentinelBtn.id = 'notracer-sentinela-btn';
     sentinelBtn.innerHTML = 'N';
     sentinelBtn.style.display = 'none';
     document.body.appendChild(sentinelBtn);
 
+    // Modal Container (Shadow DOM)
+    const modalHost = document.createElement('div');
+    modalHost.id = 'notracer-xray-host';
+    document.body.appendChild(modalHost);
+    const shadow = modalHost.attachShadow({ mode: 'open' });
+
+    // Inject Styles into Shadow DOM
+    const styleLink = document.createElement('link');
+    styleLink.rel = 'stylesheet';
+    styleLink.href = chrome.runtime.getURL('styles/sentinela.css');
+    shadow.appendChild(styleLink);
+
+    const modalRoot = document.createElement('div');
+    modalRoot.id = 'xray-modal-root';
+    modalRoot.style.display = 'none';
+    shadow.appendChild(modalRoot);
+
     let activeLink = null;
     let hideTimeout = null;
 
     document.addEventListener('mouseover', (e) => {
         const link = e.target.closest('a');
-        const isBtn = e.target.closest('#notracer-sentinela-btn');
-
-        if (link && link.href && hasTrackers(link.href)) {
-            clearTimeout(hideTimeout);
-            activeLink = link;
-            showButton(link);
-        } else if (isBtn) {
-            clearTimeout(hideTimeout);
-        } else {
+        if (link && link.href && link.href.startsWith('http') && !modalRoot.contains(e.target)) {
+            // Check if it has trackers to show the N
+            const analysis = analyzeURL(link.href);
+            if (analysis.some(p => p.status === 'TRACKER')) {
+                clearTimeout(hideTimeout);
+                activeLink = link;
+                showButton(link);
+            }
+        } else if (!e.target.closest('#notracer-sentinela-btn')) {
             startHideTimeout();
         }
     });
@@ -74,44 +134,88 @@
     sentinelBtn.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
     sentinelBtn.addEventListener('mouseleave', () => startHideTimeout());
 
-    sentinelBtn.addEventListener('click', () => {
-        if (!activeLink) return;
-
-        sentinelBtn.innerHTML = '...';
-        sentinelBtn.classList.add('loading');
-
-        // Send message to background script to bypass CORS
-        chrome.runtime.sendMessage({
-            type: 'CREATE_LINK',
-            url: activeLink.href
-        }, (response) => {
-            if (chrome.runtime.lastError) {
-                console.error('[SENTINELA] Runtime Error:', chrome.runtime.lastError);
-                showFeedback('!', 'Extension error. Reload page.');
-                return;
-            }
-
-            if (response && response.success) {
-                showFeedback('✓', 'Saved to Dashboard!', '#ffffff');
-            } else {
-                const errorMsg = response?.data?.error || response?.error || 'Failed';
-                showFeedback('!', errorMsg === 'Unauthorized' ? 'Login to notracer.com first' : errorMsg);
-            }
-        });
+    sentinelBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openXrayModal(activeLink.href);
     });
 
-    function showFeedback(text, title, color = '#00ff41') {
-        sentinelBtn.innerHTML = text;
-        sentinelBtn.title = title;
-        sentinelBtn.style.borderColor = color;
-        sentinelBtn.style.color = color;
-        sentinelBtn.classList.remove('loading');
+    function openXrayModal(url) {
+        modalRoot.innerHTML = `
+            <div class="xray-backdrop">
+                <div class="xray-content">
+                    <div class="xray-scan-line"></div>
+                    <div class="xray-header">
+                        [ NOTRACER_XRAY_VISION ]
+                        <span class="xray-close">&times;</span>
+                    </div>
+                    <div class="xray-body">
+                        <div class="xray-scanning-text">SCANNING_IN_PROGRESS...</div>
+                        <div class="xray-results" style="display: none;"></div>
+                    </div>
+                    <div class="xray-footer" style="display: none;">
+                        <button class="xray-btn xray-btn-redirect">OPEN_CLEAN_URL</button>
+                        <button class="xray-btn xray-btn-save">SAVE_TO_DASHBOARD</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        modalRoot.style.display = 'block';
 
+        const results = analyzeURL(url);
+        const resultsDiv = modalRoot.querySelector('.xray-results');
+        const footer = modalRoot.querySelector('.xray-footer');
+        const scanningText = modalRoot.querySelector('.xray-scanning-text');
+
+        // Close logic
+        const closeBtn = modalRoot.querySelector('.xray-close');
+        const backdrop = modalRoot.querySelector('.xray-backdrop');
+        const closeMod = () => modalRoot.style.display = 'none';
+        closeBtn.onclick = closeMod;
+        backdrop.onclick = (e) => { if (e.target === backdrop) closeMod(); };
+
+        // Simulate Scan
         setTimeout(() => {
-            sentinelBtn.innerHTML = 'N';
-            sentinelBtn.style.borderColor = '#00ff41';
-            sentinelBtn.style.color = '#00ff41';
-            sentinelBtn.style.display = 'none';
-        }, 3000);
+            scanningText.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            footer.style.display = 'flex';
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="xray-clean-status">[ STATUS: CLEAN_LINK ]</div>';
+            } else {
+                resultsDiv.innerHTML = results.map(p => `
+                    <div class="xray-param-row">
+                        <span class="xray-param-key">${p.key}</span>
+                        <span class="xray-param-badge ${p.status === 'TRACKER' ? 'badge-trash' : 'badge-clean'}">${p.status}</span>
+                    </div>
+                `).join('');
+            }
+        }, 1200);
+
+        // Actions
+        modalRoot.querySelector('.xray-btn-redirect').onclick = () => {
+            window.open(getCleanURL(url), '_blank');
+            closeMod();
+        };
+
+        modalRoot.querySelector('.xray-btn-save').onclick = async function () {
+            this.innerHTML = 'SAVING...';
+            this.disabled = true;
+            chrome.runtime.sendMessage({ type: 'CREATE_LINK', url }, (res) => {
+                if (res && res.success) {
+                    this.innerHTML = 'SAVED_SUCCESSFULLY';
+                    this.style.borderColor = '#fff';
+                    setTimeout(closeMod, 1500);
+                } else {
+                    this.innerHTML = 'ERROR_SAVING';
+                    this.disabled = false;
+                }
+            });
+        };
     }
+
+    // Escape to close
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') modalRoot.style.display = 'none';
+    });
 })();

@@ -1,12 +1,14 @@
+/* [ NOTRACER_SENTINELA_UI ] */
+
 #notracer-sentinela-btn {
     position: absolute;
-    z-index: 10000000; /* Extremely high to stay top */
-    width: 24px;
-    height: 24px;
-    background-color: #000000;
+    z-index: 10000000;
+    width: 26px;
+    height: 26px;
+    background-color: #000;
     color: #00ff41;
     border: 1px solid #00ff41;
-    border-radius: 4px; /* Slightly squared but premium */
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -15,16 +17,15 @@
     font-size: 14px;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     user-select: none;
-    pointer-events: auto;
 }
 
 #notracer-sentinela-btn:hover {
     background-color: #00ff41;
-    color: #000000;
+    color: #000;
+    box-shadow: 0 0 20px #00ff41;
     transform: scale(1.1);
-    box-shadow: 0 0 15px #00ff41;
 }
 
 #notracer-sentinela-btn.loading {
@@ -36,9 +37,156 @@
     to { opacity: 1; }
 }
 
-/* Base resets to avoid site interference */
-#notracer-sentinela-btn, #notracer-sentinela-btn * {
-    margin: 0;
+/* [ XRAY_MODAL_STYLING ] */
+.xray-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000001;
+}
+
+.xray-content {
+    background: #000;
+    border: 1px solid #00ff41;
+    width: 400px;
+    max-width: 90%;
     padding: 0;
-    box-sizing: border-box;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+    font-family: 'Space Mono', monospace;
+    color: #00ff41;
+    overflow: hidden;
+}
+
+.xray-scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #00ff41;
+    box-shadow: 0 0 15px #00ff41;
+    z-index: 2;
+    animation: scan 2s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+.xray-header {
+    background: #00ff41;
+    color: #000;
+    padding: 10px 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 1px;
+}
+
+.xray-close {
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.xray-body {
+    padding: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.xray-scanning-text {
+    text-align: center;
+    padding: 20px;
+    letter-spacing: 2px;
+    animation: blink 0.5s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.xray-results {
+    font-size: 12px;
+}
+
+.xray-param-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #111;
+}
+
+.xray-param-key {
+    color: #888;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+.xray-param-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.badge-trash {
+    background: #ff0041;
+    color: #fff;
+}
+
+.badge-clean {
+    background: #444;
+    color: #00ff41;
+}
+
+.xray-clean-status {
+    text-align: center;
+    padding: 20px;
+    color: #00ff41;
+    font-weight: bold;
+}
+
+.xray-footer {
+    padding: 15px;
+    border-top: 1px solid #111;
+    display: flex;
+    gap: 10px;
+}
+
+.xray-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    font-family: inherit;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    font-size: 11px;
+}
+
+.xray-btn:hover {
+    background: #00ff41;
+    color: #000;
+}
+
+.xray-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
