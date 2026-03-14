@@ -28,20 +28,20 @@
 
 /* [ BALLOON_POPUP_STYLING ] */
 .sentinela-balloon {
-    background: rgba(0, 0, 0, 0.9); /* Solid dark but slightly transparent */
-    backdrop-filter: blur(10px); /* Premium feel */
+    background: #0b0b0b; /* Solid dark background */
+    backdrop-filter: blur(8px);
     border: 1px solid #00ff41;
-    border-radius: 8px;
-    padding: 10px 14px;
+    border-radius: 10px;
+    padding: 12px 18px; /* More padding */
     position: absolute;
-    z-index: 10000001;
+    z-index: 2147483647; /* Max z-index */
     font-family: 'Space Mono', monospace;
     color: #00ff41;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 255, 65, 0.15);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-width: 160px;
+    gap: 12px;
+    min-width: 190px; /* Wider to prevent cut-off */
     animation: popIn 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
