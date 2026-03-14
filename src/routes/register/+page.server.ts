@@ -2,13 +2,19 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import bcrypt from 'bcrypt';
+import { env } from '$env/dynamic/public';
+import { env as secretEnv } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async ({ locals }) => {
     // If the user is already logged in, redirect them
-    // (We'll handle locals.user in hooks.server.ts later)
     if (locals.user) {
         throw redirect(302, '/');
     }
+
+    return {
+        isBetaOpen: env.PUBLIC_BETA_OPEN === 'true',
+        turnstileKey: env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+    };
 };
 
 export const actions = {
@@ -18,7 +24,7 @@ export const actions = {
         const password = data.get('password')?.toString();
         const turnstileToken = data.get('cf-turnstile-response')?.toString();
 
-        if (process.env.PUBLIC_BETA_OPEN !== 'true') {
+        if (env.PUBLIC_BETA_OPEN !== 'true') {
             return fail(403, { email, error: 'Public registration is currently offline.' });
         }
 
@@ -36,7 +42,7 @@ export const actions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
-                    secret: process.env.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
+                    secret: secretEnv.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
                     response: turnstileToken
                 })
             });

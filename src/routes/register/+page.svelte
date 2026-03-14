@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
-	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+	import type { ActionData, PageData } from './$types';
 
-	let { form } = $props<{ form: ActionData }>();
+	let { form, data } = $props<{ form: ActionData, data: PageData }>();
 	let loading = $state(false);
 	
-	import { PUBLIC_BETA_OPEN } from '$env/static/public';
-	const isBetaOpen = PUBLIC_BETA_OPEN === 'true';
+	const isBetaOpen = data.isBetaOpen;
+	const PUBLIC_TURNSTILE_SITE_KEY = data.turnstileKey;
 </script>
 
 <div class="w-full flex-col flex items-center justify-center min-h-[70vh]">
