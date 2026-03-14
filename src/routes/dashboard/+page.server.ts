@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
 import { cleanUrl } from '$lib/server/cleaner';
@@ -6,64 +6,76 @@ import { redis } from '$lib/server/redis';
 import { nanoid } from 'nanoid';
 
 export const load: PageServerLoad = async ({ locals }) => {
+    console.log('[DASHBOARD_TRACE] Entering load function');
+
     // Privacy Logic: Must be authenticated
-    if (!locals.user) {
+    if (!locals.user || !locals.user.id) {
+        console.warn('[DASHBOARD_TRACE] No user session found, redirecting to login');
         throw redirect(302, '/login');
     }
 
-    // Auto-Purge Logic: Only show links from the last 30 days
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const links = await db.link.findMany({
-        where: {
-            userId: locals.user.id,
-            createdAt: {
-                gte: thirtyDaysAgo
-            }
-        },
-        orderBy: {
-            createdAt: 'desc'
-        }
-    });
-
-    // Get click counts from Redis for each link
-    // Using a pipeline for efficient batch fetching
-    const pipeline = redis.pipeline();
-    for (const link of links) {
-        pipeline.get(`clicks:${link.slug}`);
-    }
-    const clickCounts = await pipeline.exec();
-
-    // Combine link data with click counts
     try {
-        const linksWithStats = links.map((link, index) => {
-            const countValue = clickCounts[index];
-            let clicks = 0;
-            if (typeof countValue === 'string') {
-                clicks = parseInt(countValue, 10);
-            } else if (typeof countValue === 'number') {
-                clicks = countValue;
-            }
+        console.log(`[DASHBOARD_TRACE] Fetching links for user: ${locals.user.id}`);
 
-            return {
-                ...link,
-                clicks
-            };
+        // Auto-Purge Logic: Only show links from the last 30 days
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const links = await db.link.findMany({
+            where: {
+                userId: locals.user.id,
+                createdAt: {
+                    gte: thirtyDaysAgo
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
         });
 
-        console.log(`[DASHBOARD_DEBUG] Returning ${linksWithStats.length} links for ${locals.user.email}`);
+        console.log(`[DASHBOARD_TRACE] Found ${links.length} links in DB`);
+
+        let linksWithStats = [];
+
+        if (links.length > 0) {
+            console.log('[DASHBOARD_TRACE] Fetching click counts from Redis');
+            const pipeline = redis.pipeline();
+            for (const link of links) {
+                pipeline.get(`clicks:${link.slug}`);
+            }
+            const clickCounts = await pipeline.exec();
+
+            linksWithStats = links.map((link, index) => {
+                const countValue = clickCounts ? clickCounts[index] : 0;
+                let clicks = 0;
+                if (typeof countValue === 'string') {
+                    clicks = parseInt(countValue, 10);
+                } else if (typeof countValue === 'number') {
+                    clicks = countValue;
+                }
+
+                return {
+                    ...link,
+                    clicks
+                };
+            });
+        } else {
+            console.log('[DASHBOARD_TRACE] No links to fetch counts for');
+        }
+
+        console.log('[DASHBOARD_TRACE] Load complete, returning data');
 
         return {
             user: locals.user,
             links: linksWithStats
         };
-    } catch (e) {
-        console.error('[DASHBOARD_DEBUG] Error mapping links:', e);
-        return {
-            user: locals.user,
-            links: links.map(l => ({ ...l, clicks: 0 }))
-        };
+    } catch (err: any) {
+        console.error('[DASHBOARD_TRACE] FATAL ERROR IN DASHBOARD LOAD:', err);
+        // We throw a SvelteKit error instead of a generic 500 to see if we can get more info
+        throw error(500, {
+            message: 'Internal Database or Cache Error',
+            code: err.code || 'UNKNOWN'
+        });
     }
 };
 
