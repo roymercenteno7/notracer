@@ -1,24 +1,25 @@
 /**
  * NoTracer Sentinela - Content Script
- * V2 Balloon UI: Discrete, functional, and lightning-fast.
+ * V2.1: Robust YouTube support and CSS accessibility fixes.
  */
 
 (function () {
     const GLOBAL_TRACKERS = [
         'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
-        'utm_id', 'fbclid', 'gclid', 'msclkid', 'igsh', 'mibextid', 'si', 'ref_', 'qid'
+        'utm_id', 'fbclid', 'gclid', 'msclkid', 'igsh', 'mibextid', 'si', 'ref_', 'qid', 'feature', 'pp'
     ];
 
     const DOMAIN_PARAMS = {
         'amazon': ['ref', 'ref_', '_encoding', 'qid', 'keywords', 'dib', 'dib_tag'],
-        'youtube': ['si', 'pp', 'feature'],
+        'youtube': ['si', 'pp', 'feature', 't'],
         'tiktok': ['_r', '_t', 'u_code'],
         'spotify': ['si']
     };
 
     function analyzeURL(urlStr) {
         try {
-            const url = new URL(urlStr);
+            // Handle relative URLs
+            const url = new URL(urlStr, window.location.origin);
             let trackerCount = 0;
             const hostname = url.hostname.toLowerCase();
 
@@ -44,22 +45,24 @@
 
     function getCleanURL(urlStr) {
         try {
-            const url = new URL(urlStr);
+            const url = new URL(urlStr, window.location.origin);
             const paramsToDelete = [];
             const hostname = url.hostname.toLowerCase();
             url.searchParams.forEach((value, key) => {
                 const lowerKey = key.toLowerCase();
-                if (GLOBAL_TRACKERS.includes(lowerKey)) paramsToDelete.push(key);
+                let isTracker = false;
+                if (GLOBAL_TRACKERS.includes(lowerKey)) isTracker = true;
                 else {
                     for (const [domain, list] of Object.entries(DOMAIN_PARAMS)) {
                         if (hostname.includes(domain)) {
                             if (list.includes(lowerKey) || list.some(p => lowerKey.startsWith(p))) {
-                                paramsToDelete.push(key);
+                                isTracker = true;
                                 break;
                             }
                         }
                     }
                 }
+                if (isTracker) paramsToDelete.push(key);
             });
             paramsToDelete.forEach(p => url.searchParams.delete(p));
             return url.toString();
@@ -79,14 +82,15 @@
     modalHost.style.zIndex = '2147483647';
     modalHost.style.pointerEvents = 'none';
     document.body.appendChild(modalHost);
-    const shadow = modalHost.attachShadow({ mode: 'open' });
 
+    const shadow = modalHost.attachShadow({ mode: 'open' });
     const balloonRoot = document.createElement('div');
     balloonRoot.className = 'sentinela-balloon';
     balloonRoot.style.display = 'none';
     balloonRoot.style.pointerEvents = 'auto';
     shadow.appendChild(balloonRoot);
 
+    // Load styles into Shadow DOM
     const styleLink = document.createElement('link');
     styleLink.rel = 'stylesheet';
     styleLink.href = chrome.runtime.getURL('styles/sentinela.css');
@@ -95,9 +99,10 @@
     let activeLink = null;
     let hideTimeout = null;
 
+    // Use capturing phase to get ahead of YouTube/Amazon SPAs
     document.addEventListener('mouseover', (e) => {
         const link = e.target.closest('a');
-        if (link && link.href && link.href.startsWith('http')) {
+        if (link && link.href && (link.href.startsWith('http') || link.href.startsWith('/'))) {
             const { trackerCount } = analyzeURL(link.href);
             if (trackerCount > 0) {
                 clearTimeout(hideTimeout);
@@ -107,7 +112,7 @@
         } else if (!e.target.closest('#notracer-sentinela-btn')) {
             startHideTimeout();
         }
-    });
+    }, true);
 
     function showButton(link) {
         if (balloonRoot.style.display === 'flex') return;
@@ -129,19 +134,20 @@
     sentinelBtn.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
     sentinelBtn.addEventListener('mouseleave', () => startHideTimeout());
 
+    // Robust click handling
     sentinelBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (activeLink) showBalloon(activeLink.href);
-    });
+    }, true);
 
     function showBalloon(url) {
         const { trackerCount } = analyzeURL(url);
         sentinelBtn.style.display = 'none';
 
         const rect = activeLink.getBoundingClientRect();
-        modalHost.style.top = `${window.scrollY + rect.top - 60}px`;
-        modalHost.style.left = `${window.scrollX + rect.left + rect.width / 2 - 70}px`;
+        modalHost.style.top = `${window.scrollY + rect.top - 80}px`;
+        modalHost.style.left = `${window.scrollX + rect.left + rect.width / 2 - 80}px`;
 
         balloonRoot.innerHTML = `
             <div class="balloon-header">
@@ -157,12 +163,16 @@
         `;
         balloonRoot.style.display = 'flex';
 
-        balloonRoot.querySelector('.balloon-btn-go').onclick = () => {
+        balloonRoot.querySelector('.balloon-btn-go').onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             window.open(getCleanURL(url), '_blank');
             closeBalloon();
         };
 
-        balloonRoot.querySelector('.balloon-btn-save').onclick = async function () {
+        balloonRoot.querySelector('.balloon-btn-save').onclick = async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             this.innerHTML = '...';
             this.disabled = true;
             chrome.runtime.sendMessage({ type: 'CREATE_LINK', url }, (res) => {
@@ -182,12 +192,11 @@
         activeLink = null;
     }
 
-    // Close on click outside or Esc
     document.addEventListener('mousedown', (e) => {
         if (!modalHost.contains(e.target) && !sentinelBtn.contains(e.target)) closeBalloon();
-    });
+    }, true);
 
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeBalloon();
-    });
+    }, true);
 })();

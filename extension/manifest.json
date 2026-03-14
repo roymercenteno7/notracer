@@ -32,5 +32,15 @@
     ],
     "icons": {
         "192": "icons/icon192.png"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "styles/sentinela.css"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
 }
