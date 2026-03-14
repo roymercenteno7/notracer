@@ -70,9 +70,9 @@
             </div>
 
             <div class="actions">
-                <button class="btn-skip" on:click={skip}>Saltar Tutorial</button>
+                <button class="btn-skip" on:click={skip}>SKIP TUTORIAL</button>
                 <button class="btn-next" on:click={nextStep}>
-                    {step === 3 ? 'COMENZAR A LIMPIAR' : 'Siguiente'}
+                    {step === 3 ? 'START CLEANING' : 'NEXT'}
                 </button>
             </div>
         </div>
