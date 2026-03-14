@@ -36,15 +36,35 @@ export const load: PageServerLoad = async ({ locals }) => {
     const clickCounts = await pipeline.exec();
 
     // Combine link data with click counts
-    const linksWithStats = links.map((link, index) => ({
-        ...link,
-        clicks: parseInt((clickCounts[index] as string) || '0', 10)
-    }));
+    try {
+        const linksWithStats = links.map((link, index) => {
+            const countValue = clickCounts[index];
+            let clicks = 0;
+            if (typeof countValue === 'string') {
+                clicks = parseInt(countValue, 10);
+            } else if (typeof countValue === 'number') {
+                clicks = countValue;
+            }
 
-    return {
-        user: locals.user,
-        links: linksWithStats
-    };
+            return {
+                ...link,
+                clicks
+            };
+        });
+
+        console.log(`[DASHBOARD_DEBUG] Returning ${linksWithStats.length} links for ${locals.user.email}`);
+
+        return {
+            user: locals.user,
+            links: linksWithStats
+        };
+    } catch (e) {
+        console.error('[DASHBOARD_DEBUG] Error mapping links:', e);
+        return {
+            user: locals.user,
+            links: links.map(l => ({ ...l, clicks: 0 }))
+        };
+    }
 };
 
 export const actions: Actions = {
