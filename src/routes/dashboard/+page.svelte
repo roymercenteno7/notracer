@@ -8,9 +8,14 @@
 	
 	// Copy to clipboard helper
 	function copyLink(link: string | { slug: string }) {
-		const textToCopy = typeof link === 'string' 
-			? link 
-			: `${window.location.origin}/${link.slug}`;
+		let textToCopy = '';
+		if (typeof link === 'object') {
+			textToCopy = `${window.location.origin}/${link.slug}`;
+		} else if (link.startsWith('http')) {
+			textToCopy = link;
+		} else {
+			textToCopy = `${window.location.origin}/${link}`;
+		}
 		
 		navigator.clipboard.writeText(textToCopy);
 	}
