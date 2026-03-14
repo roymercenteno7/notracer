@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
 	import { onMount } from 'svelte';
+	import WelcomeModal from '$lib/components/WelcomeModal.svelte';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
 
@@ -155,3 +156,5 @@
 		</div>
 	{/if}
 </div>
+
+<WelcomeModal />
