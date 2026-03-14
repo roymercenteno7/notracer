@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_BETA } from '$env/static/public';
 import { env as secretEnv } from '$env/dynamic/private';
 import { redis } from '$lib/server/redis';
 import { sendOTPEmail } from '$lib/server/email';
@@ -13,8 +13,8 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
 
     return {
-        isBetaOpen: env.PUBLIC_BETA_OPEN === 'true',
-        turnstileKey: env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+        isBetaOpen: PUBLIC_BETA === 'true',
+        turnstileKey: process.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
     };
 };
 
@@ -24,7 +24,7 @@ export const actions = {
         const email = data.get('email')?.toString();
         const turnstileToken = data.get('cf-turnstile-response')?.toString();
 
-        if (env.PUBLIC_BETA_OPEN !== 'true') {
+        if (PUBLIC_BETA !== 'true') {
             return fail(403, { email, error: 'Public registration is currently offline.' });
         }
 
