@@ -1,14 +1,57 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
+	import { onMount, tick } from 'svelte';
 
 	let { form, data } = $props<{ form: ActionData, data: PageData }>();
 	let loading = $state(false);
+	let turnstileContainer: HTMLDivElement | undefined = $state();
+	let widgetId: string | undefined = $state();
 	
 	const isBetaOpen = data.isBetaOpen;
 	const PUBLIC_TURNSTILE_SITE_KEY = data.turnstileKey;
 
     let currentStep = $derived(form?.step || 'request');
+
+	async function renderTurnstile() {
+		// Wait for Turnstile script to be available
+		let attempts = 0;
+		while (typeof window !== 'undefined' && !(window as any).turnstile && attempts < 10) {
+			await new Promise(resolve => setTimeout(resolve, 200));
+			attempts++;
+		}
+
+		if (typeof window !== 'undefined' && (window as any).turnstile && turnstileContainer) {
+			try {
+				if (widgetId) (window as any).turnstile.remove(widgetId);
+				widgetId = (window as any).turnstile.render(turnstileContainer, {
+					sitekey: PUBLIC_TURNSTILE_SITE_KEY,
+					theme: 'dark',
+					callback: function(token: string) {
+						console.log('[CLIENT] Security token generated.');
+					}
+				});
+			} catch (e) {
+				console.error('Turnstile render error:', e);
+			}
+		}
+	}
+
+	onMount(() => {
+		if (currentStep === 'request') {
+			renderTurnstile();
+		}
+	});
+
+	// Re-render when switching steps or if form error occurs
+	$effect(() => {
+		if (currentStep === 'request' && !widgetId) {
+			renderTurnstile();
+		}
+		if (form?.error && currentStep === 'request') {
+			renderTurnstile();
+		}
+	});
 </script>
 
 <div class="w-full flex-col flex items-center justify-center min-h-[80vh] py-12">
@@ -57,9 +100,13 @@
                         class="space-y-6"
                         use:enhance={() => {
                             loading = true;
-                            return async ({ update }) => {
+                            return async ({ update, result }) => {
                                 loading = false;
                                 await update();
+								// If there was an error, re-render turnstile
+								if (result.type === 'failure') {
+									renderTurnstile();
+								}
                             };
                         }}
                     >
@@ -77,8 +124,8 @@
                                 />
                             </div>
 
-                            <!-- Cloudflare Turnstile -->
-                            <div class="cf-turnstile flex justify-center py-2" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY} data-theme="dark"></div>
+                            <!-- Cloudflare Turnstile (Explicit container) -->
+                            <div bind:this={turnstileContainer} class="flex justify-center py-2 min-h-[65px]"></div>
 
                             <button 
                                 type="submit" 
