@@ -8,8 +8,8 @@
 	let turnstileContainer: HTMLDivElement | undefined = $state();
 	let widgetId: string | undefined = $state();
 	
-	const isBetaOpen = data.isBetaOpen;
-	const PUBLIC_TURNSTILE_SITE_KEY = data.turnstileKey;
+	let isBetaOpen = $derived(data.isBetaOpen);
+	let PUBLIC_TURNSTILE_SITE_KEY = $derived(data.turnstileKey);
 
     let currentStep = $derived(form?.step || 'request');
 

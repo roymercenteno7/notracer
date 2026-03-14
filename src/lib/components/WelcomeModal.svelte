@@ -54,7 +54,7 @@
             <div class="step-indicator">
                 {#each Array(3) as _, i}
                     <div class="dot {step === i + 1 ? 'active' : ''}"></div>
-                {each}
+                {/each}
             </div>
 
             <div class="card-container">
