@@ -79,9 +79,13 @@ export const actions = {
         }
 
         try {
+            console.log(`[AUTH_DEBUG] Attempting verification for: ${email}`);
             const storedCode = await redis.get(`notracer:otp:${email}`);
 
-            if (!storedCode || storedCode !== code) {
+            console.log(`[AUTH_DEBUG] Stored: "${storedCode}" | Received: "${code}"`);
+
+            if (!storedCode || String(storedCode).trim() !== String(code).trim()) {
+                console.warn(`[AUTH_DEBUG] Mismatch or Expired for ${email}`);
                 return fail(400, { email, error: 'Invalid or expired access code.', step: 'verify' });
             }
 
