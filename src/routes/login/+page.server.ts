@@ -48,6 +48,12 @@ export const actions = {
                 return fail(400, { email, error: 'Security challenge failed.' });
             }
 
+            // [SECURITY_CHECK] Check if user exists before sending OTP
+            const user = await db.user.findUnique({ where: { email } });
+            if (!user) {
+                return fail(401, { email, error: 'Account not found. Please register first.' });
+            }
+
             // Generate 6-digit code
             const code = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -83,21 +89,11 @@ export const actions = {
             // Code is valid, remove it
             await redis.del(`notracer:otp:${email}`);
 
-            // Find or Register User (Login doubles as registration if beta is open)
-            let user = await db.user.findUnique({ where: { email } });
+            // Find User
+            const user = await db.user.findUnique({ where: { email } });
 
             if (!user) {
-                // If they are logging in but don't exist, we only allow it if beta is open
-                if (PUBLIC_BETA === 'true') {
-                    user = await db.user.create({
-                        data: {
-                            email,
-                            passwordHash: null
-                        }
-                    });
-                } else {
-                    return fail(403, { email, error: 'Account not found. Registration is closed.' });
-                }
+                return fail(401, { email, error: 'Account not found during verification.', step: 'verify' });
             }
 
             // Create Session
