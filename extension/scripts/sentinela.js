@@ -151,7 +151,7 @@
 
         balloonRoot.innerHTML = `
             <div class="balloon-header">
-                <span>[ SENTINELA_V2 ]</span>
+                <span>[ NOTRACER_V2 ]</span>
                 <div class="trash-container">
                     <span>🗑️</span> <span style="font-size: 14px;">${trackerCount}</span>
                 </div>

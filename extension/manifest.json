@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "NoTracer Sentinela",
-    "version": "0.1.1",
+    "name": "NOTRACER Sentinel",
+    "version": "0.1.2",
     "description": "Real-time tracking link detector and cleaner.",
     "permissions": [
         "storage",
