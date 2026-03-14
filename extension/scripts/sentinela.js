@@ -1,6 +1,6 @@
 /**
  * NoTracer Sentinela - Content Script
- * Stability Update: Robust activeLink capture and click handling.
+ * V2 Balloon UI: Discrete, functional, and lightning-fast.
  */
 
 (function () {
@@ -19,7 +19,7 @@
     function analyzeURL(urlStr) {
         try {
             const url = new URL(urlStr);
-            const params = [];
+            let trackerCount = 0;
             const hostname = url.hostname.toLowerCase();
 
             url.searchParams.forEach((value, key) => {
@@ -36,10 +36,10 @@
                         }
                     }
                 }
-                params.push({ key, value, status: isTracker ? 'TRACKER' : 'CLEAN' });
+                if (isTracker) trackerCount++;
             });
-            return params;
-        } catch (e) { return []; }
+            return { trackerCount, url };
+        } catch (e) { return { trackerCount: 0, url: null }; }
     }
 
     function getCleanURL(urlStr) {
@@ -49,19 +49,17 @@
             const hostname = url.hostname.toLowerCase();
             url.searchParams.forEach((value, key) => {
                 const lowerKey = key.toLowerCase();
-                let isTracker = false;
-                if (GLOBAL_TRACKERS.includes(lowerKey)) isTracker = true;
+                if (GLOBAL_TRACKERS.includes(lowerKey)) paramsToDelete.push(key);
                 else {
                     for (const [domain, list] of Object.entries(DOMAIN_PARAMS)) {
                         if (hostname.includes(domain)) {
                             if (list.includes(lowerKey) || list.some(p => lowerKey.startsWith(p))) {
-                                isTracker = true;
+                                paramsToDelete.push(key);
                                 break;
                             }
                         }
                     }
                 }
-                if (isTracker) paramsToDelete.push(key);
             });
             paramsToDelete.forEach(p => url.searchParams.delete(p));
             return url.toString();
@@ -77,18 +75,17 @@
 
     const modalHost = document.createElement('div');
     modalHost.id = 'notracer-xray-host';
-    modalHost.style.position = 'fixed';
-    modalHost.style.zIndex = '2147483647'; // Max possible z-index
-    modalHost.style.top = '0';
-    modalHost.style.left = '0';
-    modalHost.style.pointerEvents = 'none'; // Only capture clicks inside the shadow DOM
+    modalHost.style.position = 'absolute';
+    modalHost.style.zIndex = '2147483647';
+    modalHost.style.pointerEvents = 'none';
     document.body.appendChild(modalHost);
-
     const shadow = modalHost.attachShadow({ mode: 'open' });
-    const modalRoot = document.createElement('div');
-    modalRoot.id = 'xray-modal-root';
-    modalRoot.style.pointerEvents = 'auto'; // Re-enable clicks inside the modal
-    shadow.appendChild(modalRoot);
+
+    const balloonRoot = document.createElement('div');
+    balloonRoot.className = 'sentinela-balloon';
+    balloonRoot.style.display = 'none';
+    balloonRoot.style.pointerEvents = 'auto';
+    shadow.appendChild(balloonRoot);
 
     const styleLink = document.createElement('link');
     styleLink.rel = 'stylesheet';
@@ -100,23 +97,20 @@
 
     document.addEventListener('mouseover', (e) => {
         const link = e.target.closest('a');
-        const isBtn = e.target.closest('#notracer-sentinela-btn');
-
         if (link && link.href && link.href.startsWith('http')) {
-            const analysis = analyzeURL(link.href);
-            if (analysis.some(p => p.status === 'TRACKER')) {
+            const { trackerCount } = analyzeURL(link.href);
+            if (trackerCount > 0) {
                 clearTimeout(hideTimeout);
                 activeLink = link;
                 showButton(link);
             }
-        } else if (isBtn) {
-            clearTimeout(hideTimeout);
-        } else {
+        } else if (!e.target.closest('#notracer-sentinela-btn')) {
             startHideTimeout();
         }
     });
 
     function showButton(link) {
+        if (balloonRoot.style.display === 'flex') return;
         const rect = link.getBoundingClientRect();
         sentinelBtn.style.top = `${window.scrollY + rect.top - 18}px`;
         sentinelBtn.style.left = `${window.scrollX + rect.left + rect.width / 2 - 12}px`;
@@ -126,7 +120,7 @@
     function startHideTimeout() {
         if (hideTimeout) clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => {
-            if (!sentinelBtn.matches(':hover')) {
+            if (!sentinelBtn.matches(':hover') && balloonRoot.style.display !== 'flex') {
                 sentinelBtn.style.display = 'none';
             }
         }, 800);
@@ -138,92 +132,62 @@
     sentinelBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-
-        if (activeLink && activeLink.href) {
-            console.log('[SENTINELA] X-Ray Triggered for:', activeLink.href);
-            openXrayModal(activeLink.href);
-        } else {
-            console.warn('[SENTINELA] No active link captured on click.');
-        }
+        if (activeLink) showBalloon(activeLink.href);
     });
 
-    function openXrayModal(url) {
-        modalHost.style.pointerEvents = 'auto';
-        modalRoot.innerHTML = `
-            <div class="xray-backdrop">
-                <div class="xray-content">
-                    <div class="xray-scan-line"></div>
-                    <div class="xray-header">
-                        [ NOTRACER_XRAY_VISION ]
-                        <span class="xray-close">&times;</span>
-                    </div>
-                    <div class="xray-body">
-                        <div class="xray-scanning-text">SCANNING_IN_PROGRESS...</div>
-                        <div class="xray-results" style="display: none;"></div>
-                    </div>
-                    <div class="xray-footer" style="display: none;">
-                        <button class="xray-btn xray-btn-redirect">OPEN_CLEAN_URL</button>
-                        <button class="xray-btn xray-btn-save">SAVE_TO_DASHBOARD</button>
-                    </div>
+    function showBalloon(url) {
+        const { trackerCount } = analyzeURL(url);
+        sentinelBtn.style.display = 'none';
+
+        const rect = activeLink.getBoundingClientRect();
+        modalHost.style.top = `${window.scrollY + rect.top - 60}px`;
+        modalHost.style.left = `${window.scrollX + rect.left + rect.width / 2 - 70}px`;
+
+        balloonRoot.innerHTML = `
+            <div class="balloon-header">
+                <span>[ SENTINELA_V2 ]</span>
+                <div class="trash-container">
+                    <span>🗑️</span> <span style="font-size: 14px;">${trackerCount}</span>
                 </div>
             </div>
+            <div class="balloon-actions">
+                <button class="balloon-btn balloon-btn-go">GO</button>
+                <button class="balloon-btn balloon-btn-save">SAVE</button>
+            </div>
         `;
-        modalRoot.style.display = 'block';
+        balloonRoot.style.display = 'flex';
 
-        const results = analyzeURL(url);
-        const resultsDiv = modalRoot.querySelector('.xray-results');
-        const footer = modalRoot.querySelector('.xray-footer');
-        const scanningText = modalRoot.querySelector('.xray-scanning-text');
-
-        const closeMod = () => {
-            modalRoot.style.display = 'none';
-            modalHost.style.pointerEvents = 'none';
-        };
-
-        modalRoot.querySelector('.xray-close').onclick = closeMod;
-        modalRoot.querySelector('.xray-backdrop').onclick = (e) => { if (e.target.className === 'xray-backdrop') closeMod(); };
-
-        setTimeout(() => {
-            scanningText.style.display = 'none';
-            resultsDiv.style.display = 'block';
-            footer.style.display = 'flex';
-
-            if (results.length === 0) {
-                resultsDiv.innerHTML = '<div class="xray-clean-status">[ STATUS: CLEAN_LINK ]</div>';
-            } else {
-                resultsDiv.innerHTML = results.map(p => `
-                    <div class="xray-param-row">
-                        <span class="xray-param-key">${p.key}</span>
-                        <span class="xray-param-badge ${p.status === 'TRACKER' ? 'badge-trash' : 'badge-clean'}">${p.status}</span>
-                    </div>
-                `).join('');
-            }
-        }, 1200);
-
-        modalRoot.querySelector('.xray-btn-redirect').onclick = () => {
+        balloonRoot.querySelector('.balloon-btn-go').onclick = () => {
             window.open(getCleanURL(url), '_blank');
-            closeMod();
+            closeBalloon();
         };
 
-        modalRoot.querySelector('.xray-btn-save').onclick = async function () {
-            this.innerHTML = 'SAVING...';
+        balloonRoot.querySelector('.balloon-btn-save').onclick = async function () {
+            this.innerHTML = '...';
             this.disabled = true;
             chrome.runtime.sendMessage({ type: 'CREATE_LINK', url }, (res) => {
                 if (res && res.success) {
-                    this.innerHTML = 'SAVED_SUCCESSFULLY';
-                    setTimeout(closeMod, 1500);
+                    this.innerHTML = '✓';
+                    setTimeout(closeBalloon, 1000);
                 } else {
-                    this.innerHTML = 'ERROR_SAVING';
+                    this.innerHTML = 'ERR';
                     this.disabled = false;
                 }
             });
         };
     }
 
+    function closeBalloon() {
+        balloonRoot.style.display = 'none';
+        activeLink = null;
+    }
+
+    // Close on click outside or Esc
+    document.addEventListener('mousedown', (e) => {
+        if (!modalHost.contains(e.target) && !sentinelBtn.contains(e.target)) closeBalloon();
+    });
+
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            modalRoot.style.display = 'none';
-            modalHost.style.pointerEvents = 'none';
-        }
+        if (e.key === 'Escape') closeBalloon();
     });
 })();
