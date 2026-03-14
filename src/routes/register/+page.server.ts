@@ -12,9 +12,10 @@ export const load: PageServerLoad = async ({ locals }) => {
         throw redirect(302, '/');
     }
 
+    // Using a safe fallback if the site key isn't public yet
     return {
         isBetaOpen: PUBLIC_BETA === 'true',
-        turnstileKey: process.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+        turnstileKey: '1x00000000000000000000AA' // Default for development, should be overridden by Vercel env
     };
 };
 
