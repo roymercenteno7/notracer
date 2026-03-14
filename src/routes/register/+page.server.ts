@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions = {
     sendCode: async ({ request }) => {
         const data = await request.formData();
-        const email = data.get('email')?.toString();
+        const email = data.get('email')?.toString()?.trim()?.toLowerCase();
         const turnstileToken = data.get('cf-turnstile-response')?.toString();
 
         if (PUBLIC_BETA !== 'true') {
@@ -71,18 +71,18 @@ export const actions = {
 
     verifyCode: async ({ request, cookies }) => {
         const data = await request.formData();
-        const email = data.get('email')?.toString();
-        const code = data.get('code')?.toString();
+        const email = data.get('email')?.toString()?.trim()?.toLowerCase();
+        const code = data.get('code')?.toString()?.trim();
 
         if (!email || !code) {
-            return fail(400, { email, error: 'Missing email or code.' });
+            return fail(400, { email, error: 'Missing email or code.', step: 'verify' });
         }
 
         try {
             const storedCode = await redis.get(`notracer:otp:${email}`);
 
             if (!storedCode || storedCode !== code) {
-                return fail(400, { email, error: 'Invalid or expired access code.' });
+                return fail(400, { email, error: 'Invalid or expired access code.', step: 'verify' });
             }
 
             // Code is valid, remove it
@@ -93,7 +93,10 @@ export const actions = {
 
             if (!user) {
                 user = await db.user.create({
-                    data: { email }
+                    data: {
+                        email,
+                        passwordHash: null
+                    }
                 });
             }
 
@@ -113,7 +116,7 @@ export const actions = {
         } catch (error: any) {
             if (error.status === 302) throw error;
             console.error('OTP Verification Error:', error);
-            return fail(500, { email, error: 'Verification failed. Try again.' });
+            return fail(500, { email, error: 'Verification failed. Try again.', step: 'verify' });
         }
     }
 } satisfies Actions;
