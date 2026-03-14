@@ -3,11 +3,14 @@
 	import type { PageData, ActionData } from './$types';
 	import { onMount } from 'svelte';
 	import WelcomeModal from '$lib/components/WelcomeModal.svelte';
+	import { i18n } from '$lib/i18n';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
 
 	let inputEl: HTMLInputElement | undefined = $state();
 	let loading = $state(false);
+
+	const t = (path: string) => i18n.t(path);
 
 	// Zero-Friction: Paste auto-submit
 	onMount(() => {
@@ -26,7 +29,7 @@
 </script>
 
 <div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
-	[ SYSTEM STATUS: BETA 1.0 ]
+	[ {t('nav.status_beta')} ]
 </div>
 
 <div class="w-full flex-col flex items-center gap-12">
@@ -34,7 +37,7 @@
 		<div class="text-6xl md:text-8xl font-black text-neon animate-pulse tracking-tighter">
 			{form?.newTotal || data.totalCleaned || 0}
 		</div>
-		<p class="text-gray-500 tracking-widest text-sm uppercase">Trackers Eliminated Globally</p>
+		<p class="text-gray-500 tracking-widest text-sm uppercase">{t('home.hero_stat')}</p>
 	</div>
 
 	<form 
@@ -57,7 +60,7 @@
 				type="url" 
 				name="url" 
 				required 
-				placeholder="Paste URL to sanitize..."
+				placeholder={t('home.input_placeholder')}
 				onpaste={handlePaste}
 				value={form?.original || ''}
 				class="w-full bg-transparent text-gray-200 placeholder-gray-600 px-4 py-4 md:py-5 outline-none font-mono"
@@ -70,7 +73,7 @@
 				</div>
 			{:else}
 				<button type="submit" class="bg-gray-900 hover:bg-neon hover:text-black text-neon transition-colors font-bold px-6 py-4 md:py-5 border-l border-gray-800">
-					CLEAN
+					{t('home.btn_clean')}
 				</button>
 			{/if}
 		</div>
@@ -81,7 +84,7 @@
 			<input 
 				type="text" 
 				name="customSlug" 
-				placeholder="custom-slug (optional)" 
+				placeholder={t('home.custom_alias')} 
 				pattern="[a-zA-Z0-9_-]+"
 				class="w-full bg-transparent text-gray-300 placeholder-gray-600 px-3 outline-none font-mono text-sm"
 				autocomplete="off"
@@ -91,7 +94,7 @@
 		{:else}
 		<div class="mt-4 text-center">
 			<p class="text-[10px] text-gray-700 font-mono uppercase tracking-widest">
-				> <a href="/login" class="text-gray-600 hover:text-neon underline">Login</a> or <a href="/register" class="text-gray-600 hover:text-neon underline">Register</a> to unlock custom aliases & non-expiring links.
+				{t('home.auth_prompt')}
 			</p>
 		</div>
 		{/if}
@@ -107,7 +110,7 @@
 		<div class="w-full max-w-xl space-y-6">
 			<!-- Cleaned URL -->
 			<div class="space-y-2">
-				<p class="text-xs text-gray-500 uppercase tracking-widest">Sanitized Destination_</p>
+				<p class="text-xs text-gray-500 uppercase tracking-widest">{t('home.result_dest')}</p>
 				<div class="border border-gray-800 bg-gray-900/50 p-4 rounded-lg break-all">
 					<a href={form.cleaned} target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-neon transition-colors">
 						{form.cleaned}
@@ -119,7 +122,7 @@
 			<div class="space-y-2">
 				<p class="text-xs text-neon uppercase tracking-widest flex items-center gap-2">
 					<span class="w-2 h-2 rounded-full bg-neon animate-pulse hidden sm:inline-block"></span>
-					Private Link Generated_
+					{t('home.result_short')}
 				</p>
 				<div class="border border-neon/50 bg-neon/5 p-4 rounded-lg flex items-center justify-between gap-4">
 					<a href={form.shortlink} target="_blank" class="text-neon font-bold text-lg hover:underline truncate">
@@ -131,7 +134,7 @@
 						onclick={() => navigator.clipboard.writeText(form?.shortlink || '')}
 						class="text-xs bg-neon text-black px-3 py-2 font-bold hover:bg-white transition-colors uppercase rounded-sm whitespace-nowrap cursor-pointer"
 					>
-						Copy
+						{t('home.copy')}
 					</div>
 				</div>
 			</div>
@@ -141,7 +144,7 @@
 				<div class="space-y-2 pt-2">
 					<p class="text-xs text-red-500 uppercase tracking-widest flex items-center gap-2">
 						<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-						Garbage Removed_
+						{t('home.result_garbage')}
 					</p>
 					<ul class="flex flex-wrap gap-2">
 						{#each form.removed as tracker}

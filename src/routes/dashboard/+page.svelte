@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
+	import { i18n } from '$lib/i18n';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
 	
 	let loading = $state(false);
+
+	const t = (path: string) => i18n.t(path);
 	
 	// Copy to clipboard helper
 	function copyLink(link: string | { slug: string }) {
@@ -22,7 +25,7 @@
 	
 	// Format Date
 	function formatDate(date: Date) {
-		return new Intl.DateTimeFormat('en-US', {
+		return new Intl.DateTimeFormat(i18n.lang === 'es' ? 'es-ES' : 'en-US', {
 			month: 'short', day: 'numeric', year: 'numeric'
 		}).format(new Date(date));
 	}
@@ -32,29 +35,29 @@
 	<title>Dashboard | NoTracer</title>
 </svelte:head>
 
-<div class="w-full max-w-5xl mx-auto space-y-12">
+<div class="w-full max-w-5xl mx-auto space-y-12 px-4">
 	
 	<!-- Header Section -->
 	<header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-gray-800 pb-6">
 		<div>
 			<h2 class="text-3xl font-bold text-neon flex items-center gap-3">
 				<span class="w-3 h-3 bg-neon rounded-full animate-pulse hidden sm:block"></span>
-				[ COMMAND CENTER ]
+				{t('dashboard.title')}
 			</h2>
 			<p class="text-gray-500 font-mono mt-2 text-sm">
-				> Authenticated as: <span class="text-gray-300">{data?.user?.email || 'Unknown User'}</span>
+				> {t('dashboard.auth_as')} <span class="text-gray-300">{data?.user?.email || 'Unknown User'}</span>
 			</p>
 		</div>
 		
 		<div class="flex gap-4 font-mono text-sm">
 			<div class="bg-gray-900 border border-gray-800 px-4 py-2 text-center rounded-sm">
-				<div class="text-gray-500 uppercase text-xs mb-1">Active Relays</div>
+				<div class="text-gray-500 uppercase text-xs mb-1">{t('dashboard.active_relays')}</div>
 				<div class="text-neon font-bold">{data?.links?.length || 0}</div>
 			</div>
 			
 			<form action="/logout" method="POST">
 				<button type="submit" class="border border-red-900/50 bg-red-950/20 text-red-500 hover:bg-red-900/40 hover:text-white px-4 py-2 transition-colors rounded-sm h-full flex flex-col justify-center items-center">
-					<span class="uppercase text-xs tracking-widest">[ DISCONNECT ]</span>
+					<span class="uppercase text-xs tracking-widest">{t('dashboard.disconnect')}</span>
 				</button>
 			</form>
 		</div>
@@ -63,7 +66,7 @@
 	<!-- Create New Link Form -->
 	<section class="border border-neon/30 bg-black p-6 md:p-8 rounded-sm shadow-[0_0_15px_rgba(0,255,65,0.05)]">
 		<h3 class="text-neon uppercase mb-6 font-bold tracking-widest text-sm flex items-center gap-2">
-			<span class="text-gray-600">></span> Execute New Sanitization
+			<span class="text-gray-600">></span> {t('dashboard.new_sanitization')}
 		</h3>
 		
 		<form 
@@ -81,7 +84,7 @@
 			<div class="space-y-4">
 				<!-- Target URL -->
 				<div>
-					<label for="url" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Target Payload (URL)</label>
+					<label for="url" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">{t('dashboard.target_url')}</label>
 					<div class="relative flex items-center border border-gray-800 bg-gray-900 focus-within:border-neon transition-colors rounded-sm overflow-hidden">
 						<span class="pl-3 text-neon font-bold">></span>
 						<input type="url" id="url" name="url" required placeholder="https://contaminated-site.com/item?utm_source=fb" class="w-full bg-transparent text-gray-200 px-3 py-3 outline-none font-mono text-sm" />
@@ -91,7 +94,7 @@
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<!-- Custom Alias -->
 					<div>
-						<label for="customSlug" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Custom Alias (Optional)</label>
+						<label for="customSlug" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">{t('dashboard.custom_alias')}</label>
 						<div class="relative flex items-center border border-gray-800 bg-gray-900 focus-within:border-neon transition-colors rounded-sm overflow-hidden">
 							<span class="px-3 text-gray-500 border-r border-gray-800 font-mono text-sm bg-black">/</span>
 							<input type="text" id="customSlug" name="customSlug" placeholder="my-secure-link" pattern="[a-zA-Z0-9_-]+" class="w-full bg-transparent text-gray-200 px-3 py-3 outline-none font-mono text-sm" />
@@ -100,12 +103,12 @@
 					
 					<!-- Expiration -->
 					<div>
-						<label for="expiration" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Time To Live (TTL)</label>
+						<label for="expiration" class="block text-xs uppercase tracking-widest text-gray-500 mb-2">{t('dashboard.ttl')}</label>
 						<select id="expiration" name="expiration" class="w-full border border-gray-800 bg-gray-900 text-gray-200 px-3 py-3 outline-none font-mono text-sm rounded-sm focus:border-neon transition-colors appearance-none cursor-pointer">
-							<option value="never">Persistent (Never Expire)</option>
-							<option value="1">1 Day</option>
-							<option value="7">7 Days</option>
-							<option value="30">30 Days</option>
+							<option value="never">{t('dashboard.ttl_never')}</option>
+							<option value="1">{t('dashboard.ttl_1d')}</option>
+							<option value="7">{t('dashboard.ttl_7d')}</option>
+							<option value="30">{t('dashboard.ttl_30d')}</option>
 						</select>
 					</div>
 				</div>
@@ -124,16 +127,16 @@
 						Link generated: <a href={form.shortlink} target="_blank" class="underline hover:text-white transition-colors">{form.shortlink}</a>
 					</div>
 					<button type="button" onclick={() => copyLink(form.newLink?.slug || '')} class="bg-neon text-black px-2 py-1 font-bold text-xs hover:bg-white uppercase whitespace-nowrap">
-						Copy
+						{t('home.copy')}
 					</button>
 				</div>
 			{/if}
 
 			<button type="submit" disabled={loading} class="w-full bg-neon text-black hover:bg-white font-bold px-6 py-4 transition-colors rounded-sm flex items-center justify-center gap-2">
 				{#if loading}
-					<span class="animate-spin font-mono text-lg leading-none">|</span> EXECUTING...
+					<span class="animate-spin font-mono text-lg leading-none">|</span> {t('dashboard.executing')}
 				{:else}
-					GENERATE SECURE LINK
+					{t('dashboard.btn_generate')}
 				{/if}
 			</button>
 		</form>
@@ -142,24 +145,24 @@
 	<!-- Links Data Table -->
 	<section>
 		<h3 class="text-neon uppercase mb-6 font-bold tracking-widest text-sm flex items-center gap-2">
-			<span class="text-gray-600">></span> System Logs & Relays
+			<span class="text-gray-600">></span> {t('dashboard.logs_title')}
 		</h3>
 		
 		{#if !data?.links || data.links.length === 0}
 			<div class="border border-dashed border-gray-800 p-12 text-center text-gray-500 font-mono text-sm">
-				[ NO RELAYS DETECTED IN DATABASE ]<br>
-				Initiate a sanitization request above to begin tracking.
+				{t('dashboard.no_relays')}<br>
+				{t('dashboard.no_relays_sub')}
 			</div>
 		{:else}
 			<div class="overflow-x-auto border border-gray-800 rounded-sm bg-black">
 				<table class="w-full text-left font-mono text-sm whitespace-nowrap">
 					<thead class="bg-gray-900 text-gray-400 text-xs uppercase tracking-widest border-b border-gray-800">
 						<tr>
-							<th class="px-6 py-4 font-normal">Alias</th>
-							<th class="px-6 py-4 font-normal">Destination (Sanitized)</th>
-							<th class="px-6 py-4 font-normal text-right">Clicks</th>
-							<th class="px-6 py-4 font-normal text-right">Created</th>
-							<th class="px-6 py-4 font-normal text-center">Action</th>
+							<th class="px-6 py-4 font-normal">{t('dashboard.col_alias')}</th>
+							<th class="px-6 py-4 font-normal">{t('dashboard.col_dest')}</th>
+							<th class="px-6 py-4 font-normal text-right">{t('dashboard.col_clicks')}</th>
+							<th class="px-6 py-4 font-normal text-right">{t('dashboard.col_created')}</th>
+							<th class="px-6 py-4 font-normal text-center">{t('dashboard.col_action')}</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-gray-800/50">
@@ -180,7 +183,7 @@
 										onclick={() => copyLink(link.slug)}
 										class="text-gray-500 hover:text-neon text-xs border border-gray-700 hover:border-neon px-2 py-1 rounded-sm transition-colors opacity-0 group-hover:opacity-100"
 									>
-										COPY
+										{i18n.t('home.copy')}
 									</button>
 								</td>
 							</tr>

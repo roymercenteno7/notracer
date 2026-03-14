@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 	import { onMount, tick } from 'svelte';
+	import { i18n } from '$lib/i18n';
 
 	let { form, data } = $props<{ form: ActionData, data: PageData }>();
 	let loading = $state(false);
@@ -12,6 +13,8 @@
 	let PUBLIC_TURNSTILE_SITE_KEY = $derived(data.turnstileKey);
 
     let currentStep = $derived(form?.step || 'request');
+
+	const t = (path: string) => i18n.t(path);
 
 	async function renderTurnstile() {
 		// Wait for Turnstile script to be available
@@ -55,16 +58,16 @@
 </script>
 
 <div class="w-full flex-col flex items-center justify-center min-h-[80vh] py-12">
-	<div class="w-full max-w-xl space-y-12">
+	<div class="w-full max-w-xl space-y-12 px-4">
         <!-- Privacy Manifesto -->
         <div class="border border-neon bg-black/50 p-6 font-mono text-xs relative overflow-hidden group">
             <div class="absolute top-0 left-0 w-full h-1 bg-neon/30 animate-pulse"></div>
             <div class="flex justify-between items-center mb-4 border-b border-neon/30 pb-2">
-                <span class="text-neon font-bold">[ PRIVACY_MANIFESTO ]</span>
+                <span class="text-neon font-bold">{t('auth.manifesto_title')}</span>
                 <span class="text-gray-600">v2.0.4-STABLE</span>
             </div>
             <p class="text-gray-300 leading-relaxed italic">
-                "We don't sell, track, or store your personal identity. To ensure maximum operational security, all links and activity data in your Dashboard will be automatically purged every 30 days. No logs. No traces."
+                {t('auth.manifesto_text')}
             </p>
             <div class="mt-4 flex gap-2">
                 <span class="px-2 py-0.5 bg-neon/10 text-neon border border-neon/20">ENCRYPTED</span>
@@ -73,8 +76,8 @@
         </div>
 
 		<div class="text-center space-y-2">
-			<h1 class="text-4xl md:text-5xl font-black text-neon tracking-tighter uppercase">Clearance_Required</h1>
-			<p class="text-gray-500 tracking-widest text-xs uppercase">Join the resistance. No passwords. No friction.</p>
+			<h1 class="text-4xl md:text-5xl font-black text-neon tracking-tighter uppercase">{t('auth.register_title')}</h1>
+			<p class="text-gray-500 tracking-widest text-xs uppercase">{t('auth.register_subtitle')}</p>
 		</div>
 
 		<div class="bg-gray-950/50 border border-gray-900 p-8 space-y-8 backdrop-blur-sm">
@@ -112,7 +115,7 @@
                     >
                         <div class="space-y-4 font-mono">
                             <div class="space-y-2">
-                                <label for="email" class="text-xs text-gray-400 uppercase tracking-widest block">Neural_Link (Email)</label>
+                                <label for="email" class="text-xs text-gray-400 uppercase tracking-widest block">{t('auth.email_label')}</label>
                                 <input 
                                     type="email" 
                                     id="email" 
@@ -132,7 +135,7 @@
                                 disabled={loading}
                                 class="w-full bg-gray-900 hover:bg-neon hover:text-black text-neon transition-all font-bold px-6 py-5 border border-gray-800 hover:border-neon disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest"
                             >
-                                {loading ? 'INITIATING_SEQUENCE...' : 'REQUEST_ACCESS_CODE_'}
+                                {loading ? t('common.loading') : t('auth.btn_request')}
                             </button>
                         </div>
                     </form>
@@ -157,7 +160,7 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label for="code" class="text-xs text-gray-400 uppercase tracking-widest block">Verification_Code</label>
+                                <label for="code" class="text-xs text-gray-400 uppercase tracking-widest block">{t('auth.code_label')}</label>
                                 <input 
                                     type="text" 
                                     id="code" 
@@ -174,7 +177,7 @@
                                 disabled={loading}
                                 class="w-full bg-gray-900 hover:bg-neon hover:text-black text-neon transition-all font-bold px-6 py-5 border border-gray-800 hover:border-neon disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest"
                             >
-                                {loading ? 'AUTHENTICATING...' : 'ESTABLISH_SESSION_'}
+                                {loading ? t('common.loading') : t('auth.btn_verify')}
                             </button>
 
                             <button 
@@ -182,7 +185,7 @@
                                 onclick={() => window.location.reload()}
                                 class="w-full text-gray-600 hover:text-gray-400 text-xs uppercase underline tracking-widest pt-4"
                             >
-                                Edit_Email / Resend_Code
+                                {t('common.back')}
                             </button>
                         </div>
                     </form>
@@ -191,7 +194,7 @@
         </div>
 
         <p class="text-center font-mono text-xs text-gray-700 uppercase tracking-widest">
-            By engaging, you acknowledge the 30-day auto-purge protocol.
+            {t('auth.purge_protocol')}
         </p>
 	</div>
 </div>

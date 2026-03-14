@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 	import { onMount, tick } from 'svelte';
+	import { i18n } from '$lib/i18n';
 
 	let { form, data } = $props<{ form: ActionData, data: PageData }>();
 	let loading = $state(false);
@@ -10,6 +11,8 @@
 	
 	let PUBLIC_TURNSTILE_SITE_KEY = $derived(data.turnstileKey);
     let currentStep = $derived(form?.step || 'request');
+
+	const t = (path: string) => i18n.t(path);
 
 	async function renderTurnstile() {
 		let attempts = 0;
@@ -48,8 +51,8 @@
 <div class="w-full flex-col flex items-center justify-center min-h-[70vh] py-12">
 	<div class="w-full max-w-md space-y-8 px-4">
 		<div class="text-center space-y-2">
-			<h1 class="text-4xl md:text-5xl font-black text-neon tracking-tighter uppercase">ACCESS_SYSTEM</h1>
-			<p class="text-gray-500 tracking-widest text-xs uppercase">Welcome back. Enter your neural link.</p>
+			<h1 class="text-4xl md:text-5xl font-black text-neon tracking-tighter uppercase">{t('auth.login_title')}</h1>
+			<p class="text-gray-500 tracking-widest text-xs uppercase">{t('auth.login_subtitle')}</p>
 		</div>
 
 		<div class="bg-gray-950/50 border border-gray-900 p-8 space-y-8 backdrop-blur-sm">
@@ -75,7 +78,7 @@
                 >
                     <div class="space-y-4 font-mono">
                         <div class="space-y-2">
-                            <label for="email" class="text-xs text-gray-500 uppercase tracking-widest block">Neural_Link (Email)</label>
+                            <label for="email" class="text-xs text-gray-500 uppercase tracking-widest block">{t('auth.email_label')}</label>
                             <input 
                                 type="email" 
                                 id="email" 
@@ -93,7 +96,7 @@
                             disabled={loading}
                             class="w-full bg-gray-900 hover:bg-neon hover:text-black text-neon transition-all font-bold px-6 py-5 border border-gray-800 hover:border-neon uppercase tracking-widest"
                         >
-                            {loading ? 'OPENING_PORT...' : 'REQUEST_ACCESS_'}
+                            {loading ? t('common.loading') : t('auth.btn_request')}
                         </button>
                     </div>
                 </form>
@@ -118,7 +121,7 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="code" class="text-xs text-gray-400 uppercase tracking-widest block">Verification_Code</label>
+                            <label for="code" class="text-xs text-gray-400 uppercase tracking-widest block">{t('auth.code_label')}</label>
                             <input 
                                 type="text" 
                                 id="code" 
@@ -135,7 +138,7 @@
                             disabled={loading}
                             class="w-full bg-gray-900 hover:bg-neon hover:text-black text-neon transition-all font-bold px-6 py-5 border border-gray-800 hover:border-neon uppercase tracking-widest"
                         >
-                            {loading ? 'AUTHENTICATING...' : 'ESTABLISH_SESSION_'}
+                            {loading ? t('common.loading') : t('auth.btn_verify')}
                         </button>
                         
                         <button 
@@ -143,15 +146,15 @@
                             onclick={() => window.location.reload()}
                             class="w-full text-gray-600 hover:text-gray-400 text-xs uppercase underline tracking-widest pt-4"
                         >
-                            Back_to_Email
+                            {t('common.back')}
                         </button>
                     </div>
                 </form>
             {/if}
         </div>
 
-        <p class="text-center font-mono text-xs text-gray-600">
-            DON'T HAVE AN ACCESS CODE? <a href="/register" class="text-neon hover:underline">REGISTER_HERE</a>
+        <p class="text-center font-mono text-xs text-gray-600 uppercase">
+            {t('auth.register_prompt').split('?')[0]}? <a href="/register" class="text-neon hover:underline">{t('auth.register_prompt').split('?')[1]}</a>
         </p>
 	</div>
 </div>

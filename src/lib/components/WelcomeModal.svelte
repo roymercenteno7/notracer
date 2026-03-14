@@ -1,27 +1,29 @@
 <script>
     import { onMount } from 'svelte';
     import { fade, fly } from 'svelte/transition';
+    import { i18n } from '$lib/i18n';
 
     let show = false;
     let step = 1;
 
-    const cards = [
+    // Svelte 5 reactive derivation for cards
+    let cards = $derived([
         {
-            title: '[ THE_INVISIBLE_TRACKERS ]',
-            description: 'Spy bots like fbclid and utm follow your every move, building a digital profile of your life without your consent.',
+            title: i18n.t('tutorial.step1_title'),
+            description: i18n.t('tutorial.step1_desc'),
             image: '/images/tutorial/step1.png'
         },
         {
-            title: '[ NOTRACER_PURGE ]',
-            description: 'Our engine identifies and desintegrates these trackers in milliseconds. Share the content, not your privacy.',
+            title: i18n.t('tutorial.step2_title'),
+            description: i18n.t('tutorial.step2_desc'),
             image: '/images/tutorial/step2.png'
         },
         {
-            title: '[ TOTAL_PRIVACY ]',
-            description: 'Clean links, secure navigation. No logs, no trace. You are finally invisible in the digital crowd.',
+            title: i18n.t('tutorial.step3_title'),
+            description: i18n.t('tutorial.step3_desc'),
             image: '/images/tutorial/step3.png'
         }
-    ];
+    ]);
 
     onMount(() => {
         const visited = localStorage.getItem('notracer_v3_tutorial');
@@ -70,9 +72,9 @@
             </div>
 
             <div class="actions">
-                <button class="btn-skip" on:click={skip}>SKIP TUTORIAL</button>
+                <button class="btn-skip" on:click={skip}>{i18n.t('common.skip')}</button>
                 <button class="btn-next" on:click={nextStep}>
-                    {step === 3 ? 'START CLEANING' : 'NEXT'}
+                    {step === 3 ? i18n.t('common.start') : i18n.t('common.next')}
                 </button>
             </div>
         </div>

@@ -1,31 +1,57 @@
 <script lang="ts">
 	import '../app.css';
+	import { i18n } from '$lib/i18n';
 	import type { LayoutData } from './$types';
 	let { children, data } = $props<{ children: any, data: LayoutData }>();
+
+	const t = (path: string) => i18n.t(path);
 </script>
+
+<svelte:head>
+	<title>NoTracer | {t('about.slogan').replace('// ', '')}</title>
+	<meta name="description" content={t('about.problem_text').substring(0, 160)} />
+	<meta property="og:title" content="NoTracer | {t('about.slogan').replace('// ', '')}" />
+	<meta property="og:description" content={t('about.problem_text').substring(0, 160)} />
+	<meta name="twitter:title" content="NoTracer | {t('about.slogan').replace('// ', '')}" />
+	<meta name="twitter:description" content={t('about.problem_text').substring(0, 160)} />
+</svelte:head>
 
 <div class="min-h-screen w-full flex flex-col items-center justify-center p-4 selection:bg-neon selection:text-black">
 	<div class="w-full max-w-2xl mx-auto flex flex-col gap-8">
 		<header class="text-center space-y-4">
-			<div class="flex flex-col items-center">
-				<h1 class="text-4xl md:text-6xl font-bold tracking-tighter text-neon uppercase border-b-2 border-neon pb-2 inline-block">
-					<a href="/" class="hover:text-white transition-colors">NoTracer</a>
-				</h1>
-				<p class="text-gray-400 text-sm md:text-base tracking-widest uppercase mt-4">
-					// Metadata Cleaner & Private Shortener
-				</p>
+			<div class="flex justify-between items-start">
+				<div class="w-10"></div> <!-- Spacer -->
+				<div class="flex flex-col items-center">
+					<h1 class="text-4xl md:text-6xl font-bold tracking-tighter text-neon uppercase border-b-2 border-neon pb-2 inline-block">
+						<a href="/" class="hover:text-white transition-colors">NoTracer</a>
+					</h1>
+					<p class="text-gray-400 text-sm md:text-base tracking-widest uppercase mt-4">
+						// Metadata Cleaner & Private Shortener
+					</p>
+				</div>
+				<!-- Language Switcher -->
+				<div class="flex gap-2">
+					<button 
+						onclick={() => i18n.setLang('en')} 
+						class="text-[10px] font-mono {i18n.lang === 'en' ? 'text-neon border-b border-neon' : 'text-gray-600 hover:text-gray-400'} cursor-pointer"
+					>EN</button>
+					<button 
+						onclick={() => i18n.setLang('es')} 
+						class="text-[10px] font-mono {i18n.lang === 'es' ? 'text-neon border-b border-neon' : 'text-gray-600 hover:text-gray-400'} cursor-pointer"
+					>ES</button>
+				</div>
 			</div>
 			
 			<nav class="flex gap-6 justify-center items-center py-4 border-y border-gray-900 mt-4">
 				<a href="/" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Home</a>
 				{#if data.user}
-					<a href="/dashboard" class="text-neon hover:underline font-bold text-xs uppercase tracking-widest">Dashboard</a>
+					<a href="/dashboard" class="text-neon hover:underline font-bold text-xs uppercase tracking-widest">{t('nav.dashboard')}</a>
 					<form action="/logout" method="POST" class="inline">
-						<button type="submit" class="hover:text-red-500 transition-colors text-xs uppercase tracking-widest cursor-pointer">Logout</button>
+						<button type="submit" class="hover:text-red-500 transition-colors text-xs uppercase tracking-widest cursor-pointer">{t('nav.logout')}</button>
 					</form>
 				{:else}
-					<a href="/login" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Login</a>
-					<a href="/register" class="hover:text-neon transition-colors text-xs uppercase tracking-widest border border-neon px-2 py-1 rounded-sm">Register</a>
+					<a href="/login" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">{t('nav.login')}</a>
+					<a href="/register" class="hover:text-neon transition-colors text-xs uppercase tracking-widest border border-neon px-2 py-1 rounded-sm">{t('nav.register')}</a>
 				{/if}
 				<a href="/about" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">About</a>
 			</nav>

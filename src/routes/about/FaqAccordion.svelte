@@ -1,44 +1,42 @@
 <script lang="ts">
-	let faqs = $state([
+	import { i18n } from '$lib/i18n';
+
+	const t = (path: string) => i18n.t(path);
+
+	let openIndex = $state(-1);
+
+	let faqs = $derived([
 		{
-			q: 'What exactly does NoTracer clean?',
-			a: 'We strip commercial tracking strings (like <code>utm_campaign</code>, <code>fbclid</code>, <code>gclid</code>) from URLs without breaking the core destination. The link takes you exactly where you want to go, just without the digital fingerprints attached.',
-			open: false
+			q: t('faq.q1'),
+			a: t('faq.a1'),
 		},
 		{
-			q: 'Why is it free?',
-			a: 'Because a cleaner internet belongs to everyone. This is a community-driven, open beta engineering project. We believe you should share the content, not your data, and nobody should pay a premium for basic privacy.',
-			open: false
+			q: t('faq.q2'),
+			a: t('faq.a2'),
 		},
 		{
-			q: 'How do I know you aren\'t tracking my clicks?',
-			a: 'Our architecture is built on a Zero-Knowledge philosophy. We use SvelteKit and a volatile Redis cache with aggressive TTL (Time to Live) limits. Metadata is incinerated automatically. There are no databases storing your browsing history.',
-			open: false
+			q: t('faq.q3'),
+			a: t('faq.a3'),
 		},
 		{
-			q: 'Is it safe for banking or private links?',
-			a: 'We only sanitize public URL metadata. NoTracer never touches encrypted content, credentials, or secure payloads. However, as an active beta, we recommend using it primarily for sanitizing social media and e-commerce links.',
-			open: false
+			q: t('faq.q4'),
+			a: t('faq.a4'),
 		},
 		{
-			q: 'What is the future of this Beta?',
-			a: 'Aggressive tracking scripts from platforms like TikTok or Instagram evolve daily. We will continually update our Deep-Clean Engine patterns to counter new surveillance techniques, ensuring your links remain pristine.',
-			open: false
+			q: t('faq.q5'),
+			a: t('faq.a5'),
 		}
 	]);
 
 	function toggle(index: number) {
-		faqs = faqs.map((faq, i) => ({
-			...faq,
-			open: i === index ? !faq.open : false // Close others, toggle current
-		}));
+		openIndex = openIndex === index ? -1 : index;
 	}
 </script>
 
 <div class="mt-12 border-t border-gray-800 pt-8">
 	<h3 class="text-neon uppercase mb-6 flex items-center gap-3 font-bold text-lg">
 		<span class="w-2 h-4 bg-neon animate-pulse"></span>
-		[ FAQ / PROTOCOLS ]
+		{t('faq.title')}
 	</h3>
 
 	<div class="space-y-4">
@@ -50,15 +48,15 @@
 					class="w-full px-5 py-4 flex justify-between items-center cursor-pointer select-none"
 					onclick={() => toggle(i)}
 				>
-					<span class="font-bold text-gray-200 {faq.open ? 'text-neon' : ''} text-sm md:text-base pr-4">
+					<span class="font-bold text-gray-200 {openIndex === i ? 'text-neon' : ''} text-sm md:text-base pr-4">
 						<span class="text-gray-600 mr-2">></span> {faq.q}
 					</span>
-					<span class="text-neon font-mono text-xl transition-transform duration-300 {faq.open ? 'rotate-45' : ''}">
+					<span class="text-neon font-mono text-xl transition-transform duration-300 {openIndex === i ? 'rotate-45' : ''}">
 						+
 					</span>
 				</div>
 				
-				{#if faq.open}
+				{#if openIndex === i}
 					<div 
 						class="px-5 pb-5 text-gray-400 text-sm leading-relaxed border-t border-gray-800/30 bg-gray-900/20"
 					>
