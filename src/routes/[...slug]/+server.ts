@@ -7,19 +7,26 @@ export const GET: RequestHandler = async ({ params }) => {
     const slug = params.slug;
 
     if (slug) {
-        let targetUrl = await redis.get<string>(`notracer:link:${slug}`);
+        // Unified Prefix
+        const redisKey = `notracer:link:${slug}`;
+        const clickKey = `notracer:clicks:${slug}`;
+
+        let targetUrl = await redis.get<string>(redisKey);
 
         if (!targetUrl) {
             // Check Postgres for persistent links
             const dbLink = await db.link.findUnique({ where: { slug } });
             if (dbLink) {
                 targetUrl = dbLink.cleanedUrl;
-                // Repopulate cache (persistent link)
-                await redis.set(`notracer:link:${slug}`, targetUrl);
+                // Repopulate cache
+                await redis.set(redisKey, targetUrl);
             }
         }
 
         if (targetUrl) {
+            // Background Click Counter (Fire and forget)
+            redis.incr(clickKey).catch(e => console.error('Stats incr error:', e));
+
             // Transparent redirection to the clean URL
             throw redirect(301, targetUrl);
         }

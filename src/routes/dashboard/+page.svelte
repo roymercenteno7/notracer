@@ -7,9 +7,12 @@
 	let loading = $state(false);
 	
 	// Copy to clipboard helper
-	function copyLink(slug: string) {
-		navigator.clipboard.writeText(`https://notracer.com/${slug}`);
-		// Quick visual feedback could be added here
+	function copyLink(link: string | { slug: string }) {
+		const textToCopy = typeof link === 'string' 
+			? link 
+			: `${window.location.origin}/${link.slug}`;
+		
+		navigator.clipboard.writeText(textToCopy);
 	}
 	
 	// Format Date
