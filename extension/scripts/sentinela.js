@@ -1,6 +1,6 @@
 /**
  * NoTracer Sentinela - Content Script
- * X-Ray Vision Update: Implements Shadow DOM Modal and URL Scanner.
+ * Stability Update: Robust activeLink capture and click handling.
  */
 
 (function () {
@@ -25,10 +25,8 @@
             url.searchParams.forEach((value, key) => {
                 const lowerKey = key.toLowerCase();
                 let isTracker = false;
-
-                if (GLOBAL_TRACKERS.includes(lowerKey)) {
-                    isTracker = true;
-                } else {
+                if (GLOBAL_TRACKERS.includes(lowerKey)) isTracker = true;
+                else {
                     for (const [domain, list] of Object.entries(DOMAIN_PARAMS)) {
                         if (hostname.includes(domain)) {
                             if (list.includes(lowerKey) || list.some(p => lowerKey.startsWith(p))) {
@@ -40,7 +38,6 @@
                 }
                 params.push({ key, value, status: isTracker ? 'TRACKER' : 'CLEAN' });
             });
-
             return params;
         } catch (e) { return []; }
     }
@@ -50,7 +47,6 @@
             const url = new URL(urlStr);
             const paramsToDelete = [];
             const hostname = url.hostname.toLowerCase();
-
             url.searchParams.forEach((value, key) => {
                 const lowerKey = key.toLowerCase();
                 let isTracker = false;
@@ -67,7 +63,6 @@
                 }
                 if (isTracker) paramsToDelete.push(key);
             });
-
             paramsToDelete.forEach(p => url.searchParams.delete(p));
             return url.toString();
         } catch (e) { return urlStr; }
@@ -80,37 +75,43 @@
     sentinelBtn.style.display = 'none';
     document.body.appendChild(sentinelBtn);
 
-    // Modal Container (Shadow DOM)
     const modalHost = document.createElement('div');
     modalHost.id = 'notracer-xray-host';
+    modalHost.style.position = 'fixed';
+    modalHost.style.zIndex = '2147483647'; // Max possible z-index
+    modalHost.style.top = '0';
+    modalHost.style.left = '0';
+    modalHost.style.pointerEvents = 'none'; // Only capture clicks inside the shadow DOM
     document.body.appendChild(modalHost);
-    const shadow = modalHost.attachShadow({ mode: 'open' });
 
-    // Inject Styles into Shadow DOM
+    const shadow = modalHost.attachShadow({ mode: 'open' });
+    const modalRoot = document.createElement('div');
+    modalRoot.id = 'xray-modal-root';
+    modalRoot.style.pointerEvents = 'auto'; // Re-enable clicks inside the modal
+    shadow.appendChild(modalRoot);
+
     const styleLink = document.createElement('link');
     styleLink.rel = 'stylesheet';
     styleLink.href = chrome.runtime.getURL('styles/sentinela.css');
     shadow.appendChild(styleLink);
-
-    const modalRoot = document.createElement('div');
-    modalRoot.id = 'xray-modal-root';
-    modalRoot.style.display = 'none';
-    shadow.appendChild(modalRoot);
 
     let activeLink = null;
     let hideTimeout = null;
 
     document.addEventListener('mouseover', (e) => {
         const link = e.target.closest('a');
-        if (link && link.href && link.href.startsWith('http') && !modalRoot.contains(e.target)) {
-            // Check if it has trackers to show the N
+        const isBtn = e.target.closest('#notracer-sentinela-btn');
+
+        if (link && link.href && link.href.startsWith('http')) {
             const analysis = analyzeURL(link.href);
             if (analysis.some(p => p.status === 'TRACKER')) {
                 clearTimeout(hideTimeout);
                 activeLink = link;
                 showButton(link);
             }
-        } else if (!e.target.closest('#notracer-sentinela-btn')) {
+        } else if (isBtn) {
+            clearTimeout(hideTimeout);
+        } else {
             startHideTimeout();
         }
     });
@@ -137,10 +138,17 @@
     sentinelBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        openXrayModal(activeLink.href);
+
+        if (activeLink && activeLink.href) {
+            console.log('[SENTINELA] X-Ray Triggered for:', activeLink.href);
+            openXrayModal(activeLink.href);
+        } else {
+            console.warn('[SENTINELA] No active link captured on click.');
+        }
     });
 
     function openXrayModal(url) {
+        modalHost.style.pointerEvents = 'auto';
         modalRoot.innerHTML = `
             <div class="xray-backdrop">
                 <div class="xray-content">
@@ -167,14 +175,14 @@
         const footer = modalRoot.querySelector('.xray-footer');
         const scanningText = modalRoot.querySelector('.xray-scanning-text');
 
-        // Close logic
-        const closeBtn = modalRoot.querySelector('.xray-close');
-        const backdrop = modalRoot.querySelector('.xray-backdrop');
-        const closeMod = () => modalRoot.style.display = 'none';
-        closeBtn.onclick = closeMod;
-        backdrop.onclick = (e) => { if (e.target === backdrop) closeMod(); };
+        const closeMod = () => {
+            modalRoot.style.display = 'none';
+            modalHost.style.pointerEvents = 'none';
+        };
 
-        // Simulate Scan
+        modalRoot.querySelector('.xray-close').onclick = closeMod;
+        modalRoot.querySelector('.xray-backdrop').onclick = (e) => { if (e.target.className === 'xray-backdrop') closeMod(); };
+
         setTimeout(() => {
             scanningText.style.display = 'none';
             resultsDiv.style.display = 'block';
@@ -192,7 +200,6 @@
             }
         }, 1200);
 
-        // Actions
         modalRoot.querySelector('.xray-btn-redirect').onclick = () => {
             window.open(getCleanURL(url), '_blank');
             closeMod();
@@ -204,7 +211,6 @@
             chrome.runtime.sendMessage({ type: 'CREATE_LINK', url }, (res) => {
                 if (res && res.success) {
                     this.innerHTML = 'SAVED_SUCCESSFULLY';
-                    this.style.borderColor = '#fff';
                     setTimeout(closeMod, 1500);
                 } else {
                     this.innerHTML = 'ERROR_SAVING';
@@ -214,8 +220,10 @@
         };
     }
 
-    // Escape to close
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') modalRoot.style.display = 'none';
+        if (e.key === 'Escape') {
+            modalRoot.style.display = 'none';
+            modalHost.style.pointerEvents = 'none';
+        }
     });
 })();
