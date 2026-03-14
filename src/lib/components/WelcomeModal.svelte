@@ -3,8 +3,8 @@
     import { fade, fly } from 'svelte/transition';
     import { i18n } from '$lib/i18n';
 
-    let show = false;
-    let step = 1;
+    let show = $state(false);
+    let step = $state(1);
 
     // Svelte 5 reactive derivation for cards
     let cards = $derived([
