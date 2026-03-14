@@ -1,0 +1,44 @@
+#notracer-sentinela-btn {
+    position: absolute;
+    z-index: 10000000; /* Extremely high to stay top */
+    width: 24px;
+    height: 24px;
+    background-color: #000000;
+    color: #00ff41;
+    border: 1px solid #00ff41;
+    border-radius: 4px; /* Slightly squared but premium */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    pointer-events: auto;
+}
+
+#notracer-sentinela-btn:hover {
+    background-color: #00ff41;
+    color: #000000;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #00ff41;
+}
+
+#notracer-sentinela-btn.loading {
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+}
+
+/* Base resets to avoid site interference */
+#notracer-sentinela-btn, #notracer-sentinela-btn * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
