@@ -98,6 +98,7 @@
 
     let activeLink = null;
     let hideTimeout = null;
+    let balloonTimeout = null;
 
     // Use capturing phase to get ahead of YouTube/Amazon SPAs
     document.addEventListener('mouseover', (e) => {
@@ -145,6 +146,8 @@
         const { trackerCount } = analyzeURL(url);
         sentinelBtn.style.display = 'none';
 
+        if (balloonTimeout) clearTimeout(balloonTimeout);
+
         const rect = activeLink.getBoundingClientRect();
         modalHost.style.top = `${window.scrollY + rect.top - 80}px`;
         modalHost.style.left = `${window.scrollX + rect.left + rect.width / 2 - 80}px`;
@@ -152,8 +155,11 @@
         balloonRoot.innerHTML = `
             <div class="balloon-header">
                 <span>[ NOTRACER_V2 ]</span>
-                <div class="trash-container">
-                    <span>🗑️</span> <span style="font-size: 14px;">${trackerCount}</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="trash-container">
+                        <span>🗑️</span> <span style="font-size: 14px;">${trackerCount}</span>
+                    </div>
+                    <span class="balloon-close" style="cursor: pointer; font-size: 14px; margin-left: 4px;">&times;</span>
                 </div>
             </div>
             <div class="balloon-actions">
@@ -162,6 +168,21 @@
             </div>
         `;
         balloonRoot.style.display = 'flex';
+
+        // Close logic
+        balloonRoot.querySelector('.balloon-close').onclick = (e) => {
+            e.stopPropagation();
+            closeBalloon();
+        };
+
+        // Auto-close after 3s
+        balloonTimeout = setTimeout(closeBalloon, 3000);
+
+        // Reset timeout on hover
+        balloonRoot.onmouseenter = () => clearTimeout(balloonTimeout);
+        balloonRoot.onmouseleave = () => {
+            balloonTimeout = setTimeout(closeBalloon, 1500);
+        };
 
         balloonRoot.querySelector('.balloon-btn-go').onclick = (e) => {
             e.preventDefault();
