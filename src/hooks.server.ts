@@ -9,8 +9,12 @@ export const handle: Handle = async ({ event, resolve }) => {
         try {
             const userId = await redis.get<string>(`notracer:session:${sessionId}`);
             if (userId) {
-                // Pass minimal user info to locals, or fetch full user
-                event.locals.user = { id: userId };
+                const user = await db.user.findUnique({ where: { id: userId } });
+                if (user) {
+                    event.locals.user = { id: user.id, email: user.email };
+                } else {
+                    event.cookies.delete('session', { path: '/' });
+                }
             } else {
                 // Invalid or expired session
                 event.cookies.delete('session', { path: '/' });
