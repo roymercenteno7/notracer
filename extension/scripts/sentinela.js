@@ -1,7 +1,7 @@
 /**
  * NoTracer Sentinela - Content Script
  * Real-time tracking link detector and cleaner.
- * Stability Update: Added hide grace period for better UX.
+ * Interaction Update: Delegating fetch to background script to bypass CORS.
  */
 
 (function () {
@@ -57,8 +57,7 @@
 
     function showButton(link) {
         const rect = link.getBoundingClientRect();
-        // Move slightly closer to the link to avoid "empty gaps"
-        sentinelBtn.style.top = `${window.scrollY + rect.top - 18}px`; // Closer than -20
+        sentinelBtn.style.top = `${window.scrollY + rect.top - 18}px`;
         sentinelBtn.style.left = `${window.scrollX + rect.left + rect.width / 2 - 12}px`;
         sentinelBtn.style.display = 'flex';
     }
@@ -66,62 +65,53 @@
     function startHideTimeout() {
         if (hideTimeout) clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => {
-            // Re-check if we are hovering the button or the link
             if (!sentinelBtn.matches(':hover')) {
                 sentinelBtn.style.display = 'none';
             }
-        }, 800); // Increased to 800ms for more comfort
+        }, 800);
     }
 
-    sentinelBtn.addEventListener('mouseenter', () => {
-        clearTimeout(hideTimeout);
-    });
+    sentinelBtn.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+    sentinelBtn.addEventListener('mouseleave', () => startHideTimeout());
 
-    sentinelBtn.addEventListener('mouseleave', () => {
-        startHideTimeout();
-    });
-
-    sentinelBtn.addEventListener('click', async () => {
+    sentinelBtn.addEventListener('click', () => {
         if (!activeLink) return;
 
         sentinelBtn.innerHTML = '...';
         sentinelBtn.classList.add('loading');
 
-        try {
-            const API_ORIGIN = 'https://notracer.com';
-
-            const response = await fetch(`${API_ORIGIN}/api/links/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: activeLink.href })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                sentinelBtn.innerHTML = '✓';
-                sentinelBtn.title = 'Saved to Dashboard!';
-                sentinelBtn.style.borderColor = '#ffffff';
-                sentinelBtn.style.color = '#ffffff';
-            } else {
-                throw new Error(result.error || 'Failed');
+        // Send message to background script to bypass CORS
+        chrome.runtime.sendMessage({
+            type: 'CREATE_LINK',
+            url: activeLink.href
+        }, (response) => {
+            if (chrome.runtime.lastError) {
+                console.error('[SENTINELA] Runtime Error:', chrome.runtime.lastError);
+                showFeedback('!', 'Extension error. Reload page.');
+                return;
             }
 
-            setTimeout(() => {
-                sentinelBtn.innerHTML = 'N';
-                sentinelBtn.style.borderColor = '#00ff41';
-                sentinelBtn.style.color = '#00ff41';
-                sentinelBtn.classList.remove('loading');
-                sentinelBtn.style.display = 'none';
-            }, 3000);
-        } catch (err) {
-            sentinelBtn.innerHTML = '!';
-            sentinelBtn.title = err.message === 'Unauthorized' ? 'Login to notracer.com first' : err.message;
-            console.error('[SENTINELA] Error:', err);
-            setTimeout(() => {
-                sentinelBtn.innerHTML = 'N';
-                sentinelBtn.classList.remove('loading');
-            }, 3000);
-        }
+            if (response && response.success) {
+                showFeedback('✓', 'Saved to Dashboard!', '#ffffff');
+            } else {
+                const errorMsg = response?.data?.error || response?.error || 'Failed';
+                showFeedback('!', errorMsg === 'Unauthorized' ? 'Login to notracer.com first' : errorMsg);
+            }
+        });
     });
+
+    function showFeedback(text, title, color = '#00ff41') {
+        sentinelBtn.innerHTML = text;
+        sentinelBtn.title = title;
+        sentinelBtn.style.borderColor = color;
+        sentinelBtn.style.color = color;
+        sentinelBtn.classList.remove('loading');
+
+        setTimeout(() => {
+            sentinelBtn.innerHTML = 'N';
+            sentinelBtn.style.borderColor = '#00ff41';
+            sentinelBtn.style.color = '#00ff41';
+            sentinelBtn.style.display = 'none';
+        }, 3000);
+    }
 })();

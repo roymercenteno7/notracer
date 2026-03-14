@@ -27,5 +27,26 @@ export const handle: Handle = async ({ event, resolve }) => {
         }
     }
 
-    return resolve(event);
+    // CORS Headers for Extension/API
+    if (event.url.pathname.startsWith('/api/')) {
+        if (event.request.method === 'OPTIONS') {
+            return new Response(null, {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'Access-Control-Max-Age': '86400'
+                }
+            });
+        }
+    }
+
+    const response = await resolve(event);
+
+    if (event.url.pathname.startsWith('/api/')) {
+        response.headers.set('Access-Control-Allow-Origin', '*');
+        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    }
+
+    return response;
 };
