@@ -7,10 +7,17 @@ import { nanoid } from 'nanoid';
 
 // Provide global counter on initial load
 export const load: PageServerLoad = async () => {
-    const totalCleaned = await redis.get<number>('notracer:total_cleaned');
-    return {
-        totalCleaned: totalCleaned || 0
-    };
+    try {
+        const totalCleaned = await redis.get<number>('notracer:total_cleaned');
+        return {
+            totalCleaned: totalCleaned || 0
+        };
+    } catch (err) {
+        console.error('[HOME_LOAD] Redis error:', err);
+        return {
+            totalCleaned: 0
+        };
+    }
 };
 
 export const actions = {
