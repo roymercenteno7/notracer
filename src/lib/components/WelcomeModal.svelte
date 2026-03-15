@@ -72,8 +72,8 @@
             </div>
 
             <div class="actions">
-                <button class="btn-skip" on:click={skip}>{i18n.t('common.skip')}</button>
-                <button class="btn-next" on:click={nextStep}>
+                <button class="btn-skip" onclick={skip}>{i18n.t('common.skip')}</button>
+                <button class="btn-next" onclick={nextStep}>
                     {step === 3 ? i18n.t('common.start') : i18n.t('common.next')}
                 </button>
             </div>
