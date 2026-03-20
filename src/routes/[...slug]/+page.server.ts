@@ -1,9 +1,9 @@
-import { redirect } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import { error, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 import { redis } from '$lib/server/redis';
 import { db } from '$lib/server/db';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const load: PageServerLoad = async ({ params }) => {
     const slug = params.slug;
 
     if (slug) {
@@ -32,6 +32,6 @@ export const GET: RequestHandler = async ({ params }) => {
         }
     }
 
-    // If no slug or link not found, send back to home
-    throw redirect(302, '/');
+    // If no slug or link not found, throw 404 to trigger +error.svelte
+    throw error(404, 'RESOURCE_NOT_FOUND');
 };

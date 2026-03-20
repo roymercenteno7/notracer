@@ -1,163 +1,281 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import type { PageData, ActionData } from './$types';
-	import { onMount } from 'svelte';
-	import WelcomeModal from '$lib/components/WelcomeModal.svelte';
 	import { i18n } from '$lib/i18n';
-
-	let { data, form } = $props<{ data: PageData; form: ActionData }>();
-
-	let inputEl: HTMLInputElement | undefined = $state();
-	let loading = $state(false);
-
+	import { onMount } from 'svelte';
 	const t = (path: string) => i18n.t(path);
 
-	// Zero-Friction: Paste auto-submit
-	onMount(() => {
-		inputEl?.focus();
-	});
+    let currentTime = $state("");
 
-	function handlePaste(e: ClipboardEvent) {
-		const pastedText = e.clipboardData?.getData('text');
-		if (pastedText && (pastedText.startsWith('http://') || pastedText.startsWith('https://'))) {
-			// Auto-submit after briefly showing the url
-			setTimeout(() => {
-				if (inputEl?.form) inputEl.form.requestSubmit();
-			}, 100);
-		}
-	}
+    onMount(() => {
+        const updateTime = () => {
+            const now = new Date();
+            currentTime = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+    });
 </script>
 
-<div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
-	[ {t('nav.status_beta')} ]
+<svelte:head>
+	<title>NoTracer | {t('about.slogan').replace('// ', '')}</title>
+	<meta name="description" content="{t('landing.subtitle').replace('// ', '')} {t('landing.m1_desc')}" />
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "WebApplication",
+			"name": "NoTracer Suite",
+			"url": "https://notracer.com",
+			"description": "Herramientas de privacidad técnica. Elimina rastreadores de URLs, metadata de imágenes y asegura tus comunicaciones.",
+			"applicationCategory": "UtilitiesApplication",
+			"operatingSystem": "All",
+			"offers": {
+				"@type": "Offer",
+				"price": "0",
+				"priceCurrency": "USD"
+			}
+		}
+	</script>
+</svelte:head>
+
+<!-- Outer Terminal Container -->
+<div class="w-full h-full font-mono text-gray-500 bg-[#050505] min-h-screen text-sm -m-4">
+    <div class="max-w-[1400px] mx-auto p-4 md:p-8 flex flex-col gap-12 pt-8">
+        <!-- Top Status Bar -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-[10px] tracking-widest uppercase mb-4">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-neon animate-pulse"></span>
+                <span>{t('landing.sys_status')}</span>
+            </div>
+            <div class="flex items-center gap-6 mt-4 md:mt-0">
+                <div class="flex items-center gap-4">
+                    <a href="/login" class="hover:text-neon transition-colors">> {t('nav.login').toUpperCase()}</a>
+                    <a href="/register" class="hover:text-neon transition-colors">> {t('nav.register').toUpperCase()}</a>
+                </div>
+                <span>{currentTime}</span>
+                <button 
+                    onclick={() => i18n.setLang(i18n.lang === 'en' ? 'es' : 'en')}
+                    class="border border-gray-800 px-2 py-1 hover:text-white"
+                >
+                    [{i18n.lang.toUpperCase()}]
+                </button>
+            </div>
+        </div>
+
+        <!-- Huge Title Section -->
+        <div class="mt-8 space-y-6">
+            <h1 class="text-5xl md:text-8xl font-black text-neon tracking-tighter" style="text-shadow: 0 0 40px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0,255,65, 0.3);">
+                [ SYSTEM: NOTRACER_SUITE ]<span class="animate-pulse">_</span>
+            </h1>
+            <p class="text-gray-600 text-sm md:text-lg tracking-widest">
+                {t('landing.subtitle')}
+            </p>
+        </div>
+
+        <!-- System Stats Bar -->
+        <div class="flex flex-col md:flex-row items-start md:items-center text-[10px] md:text-xs tracking-widest uppercase border-y border-gray-900 py-4 gap-4 md:gap-0 mt-8">
+            <div class="bg-neon text-black font-bold px-4 py-1 mr-6 flex-shrink-0">
+                {t('landing.feed')}
+            </div>
+            <div class="flex flex-wrap items-center gap-y-2 text-gray-600">
+                <span class="mr-2">{t('landing.threats_neutralized')}</span>
+                <span class="text-neon mr-4">{t('landing.sys_initialized')}</span>
+                <span class="hidden md:inline mr-4 text-gray-800">|</span>
+                
+                <span class="mr-2">{t('landing.state')}</span>
+                <span class="text-neon mr-4">{t('landing.operational')}</span>
+                <span class="hidden md:inline mr-4 text-gray-800">|</span>
+                
+                <span class="mr-2">{t('landing.protocol')}</span>
+                <span class="text-neon mr-4">{t('landing.zero_log')}</span>
+                <span class="hidden md:inline mr-4 text-gray-800">|</span>
+                
+                <span class="mr-2">{t('landing.encryption')}</span>
+                <span class="text-neon">AES-256</span>
+            </div>
+        </div>
+
+        <!-- Modules Section -->
+        <div class="mt-8">
+            <div class="text-gray-600 text-[10px] md:text-xs tracking-widest uppercase mb-8">
+                {t('landing.select_module')}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- CARD 1: LINK_PURGER -->
+                <div class="border border-gray-800 border-t-neon bg-[#080808] p-6 flex flex-col hover:border-neon/50 transition-colors group">
+                    <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-600">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg leading-none">⬡</span> M-01
+                        </div>
+                        <div class="flex items-center gap-2 text-neon">
+                            <span class="w-1.5 h-1.5 rounded-full bg-neon"></span> {t('landing.operational')}
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-neon transition-colors">{t('landing.m1_title')}</h2>
+                    
+                    <p class="text-gray-500 text-sm leading-relaxed mb-8 flex-1">
+                        {t('landing.m1_desc')}
+                    </p>
+
+                    <div class="flex justify-between items-center text-[10px] tracking-widest mb-6">
+                        <div class="flex gap-2">
+                            <span class="text-yellow-600 border border-yellow-900/50 px-2 py-0.5">{t('landing.active')}</span>
+                            <span class="text-gray-300 border border-gray-600 px-2 py-0.5">{t('landing.easy')}</span>
+                        </div>
+                        <span class="text-gray-600">+100 XP</span>
+                    </div>
+
+                    <a href="/link" class="block w-full border border-neon/50 bg-neon/10 hover:bg-neon hover:text-black text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
+                        {t('landing.deploy_now')}
+                    </a>
+                </div>
+
+                <!-- CARD 2: MEDIA_SHIFTER -->
+                <div class="border border-gray-900 bg-[#080808] p-6 flex flex-col opacity-60 pointer-events-none">
+                    <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-700">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg leading-none">◈</span> M-02
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-700"></span> {t('landing.blocked')}
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-400 tracking-wider mb-4">{t('landing.m2_title')}</h2>
+                    
+                    <p class="text-gray-600 text-sm leading-relaxed mb-8 flex-1">
+                        {t('landing.m2_desc')}
+                    </p>
+
+                    <div class="flex justify-between items-center text-[10px] tracking-widest mb-6">
+                        <div class="flex gap-2">
+                            <span class="text-yellow-700/50 border border-yellow-900/30 px-2 py-0.5">{t('landing.wip')}</span>
+                            <span class="text-gray-600 border border-gray-800 px-2 py-0.5">{t('landing.medium')}</span>
+                        </div>
+                        <span class="text-gray-700">+250 XP</span>
+                    </div>
+
+                    <div class="w-full border border-gray-900 bg-black text-gray-800 text-center py-3 font-bold uppercase tracking-widest text-xs">
+                        {t('landing.access_denied')}
+                    </div>
+                </div>
+
+                <!-- CARD 3: GHOST_SEND -->
+                <div class="border border-gray-900 bg-[#080808] p-6 flex flex-col opacity-60 pointer-events-none">
+                    <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-700">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg leading-none">◉</span> M-03
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-700"></span> {t('landing.blocked')}
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-400 tracking-wider mb-4">{t('landing.m3_title')}</h2>
+                    
+                    <p class="text-gray-600 text-sm leading-relaxed mb-8 flex-1">
+                        {t('landing.m3_desc')}
+                    </p>
+
+                    <div class="flex justify-between items-center text-[10px] tracking-widest mb-6">
+                        <div class="flex gap-2">
+                            <span class="text-yellow-700/50 border border-yellow-900/30 px-2 py-0.5">{t('landing.wip')}</span>
+                            <span class="text-gray-600 border border-gray-800 px-2 py-0.5">{t('landing.hard')}</span>
+                        </div>
+                        <span class="text-gray-700">+500 XP</span>
+                    </div>
+
+                    <div class="w-full border border-gray-900 bg-black text-gray-800 text-center py-3 font-bold uppercase tracking-widest text-xs">
+                        {t('landing.access_denied')}
+                    </div>
+                </div>
+
+                <!-- CARD 4: SECURE_QR -->
+                <div class="border border-gray-900 bg-[#080808] p-6 flex flex-col opacity-60 pointer-events-none">
+                    <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-700">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg leading-none">⬢</span> M-04
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-700"></span> {t('landing.blocked')}
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-400 tracking-wider mb-4">{t('landing.m4_title')}</h2>
+                    
+                    <p class="text-gray-600 text-sm leading-relaxed mb-8 flex-1">
+                        {t('landing.m4_desc')}
+                    </p>
+
+                    <div class="flex justify-between items-center text-[10px] tracking-widest mb-6">
+                        <div class="flex gap-2">
+                            <span class="text-yellow-700/50 border border-yellow-900/30 px-2 py-0.5">{t('landing.wip')}</span>
+                            <span class="text-gray-600 border border-gray-800 px-2 py-0.5">{t('landing.medium')}</span>
+                        </div>
+                        <span class="text-gray-700">+300 XP</span>
+                    </div>
+
+                    <div class="w-full border border-gray-900 bg-black text-gray-800 text-center py-3 font-bold uppercase tracking-widest text-xs">
+                        {t('landing.access_denied')}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="mt-16 border-t border-gray-900/50 pt-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Col 1: SOBRE_LA_RESISTENCIA -->
+                <div class="flex flex-col gap-6">
+                    <h3 class="text-neon tracking-widest text-xs">{t('landing.about_resistance')}</h3>
+                    <p class="text-gray-600 text-[11px] leading-relaxed font-mono">
+                        {t('landing.about_p1')}
+                    </p>
+                    <p class="text-gray-600 text-[11px] leading-relaxed font-mono">
+                        {t('landing.about_p2')}
+                    </p>
+                    <div class="flex flex-wrap gap-4 mt-2 text-[9px] uppercase tracking-widest">
+                        <span class="text-neon border border-green-900/40 bg-green-950/20 px-2 py-1">ZERO_LOGS</span>
+                        <span class="text-neon border border-green-900/40 bg-green-950/20 px-2 py-1">NO_IP_TRACK</span>
+                        <span class="text-neon border border-green-900/40 bg-green-950/20 px-2 py-1">STABLE_DEPLOYMENT</span>
+                    </div>
+                </div>
+
+                <!-- Col 2: APOYA_LA_RESISTENCIA -->
+                <div class="flex flex-col gap-6">
+                    <h3 class="text-neon tracking-widest text-xs">{t('landing.support_resistance')}</h3>
+                    <p class="text-gray-600 text-[11px] leading-relaxed font-mono">
+                        {t('landing.support_p1')}
+                    </p>
+                </div>
+
+                <!-- Col 3: CANAL_DE_COMUNICACIONES -->
+                <div class="flex flex-col gap-6 md:pl-8 border-l-0 md:border-l border-gray-900/30">
+                    <h3 class="text-neon tracking-widest text-xs">{t('landing.comms_channel')}</h3>
+                    <div class="flex flex-col gap-4 text-[11px] font-mono">
+                        <div>
+                            <div class="text-gray-600 mb-1">{t('landing.support')}</div>
+                            <a href="mailto:hello@notracer.com" class="text-neon hover:underline transition-colors">> hello@notracer.com</a>
+                        </div>
+                        <div>
+                            <div class="text-gray-600 mb-1">{t('landing.legal')}</div>
+                            <a href="mailto:admin@notracer.com" class="text-neon hover:underline transition-colors">> admin@notracer.com</a>
+                        </div>
+                        <div class="flex gap-4 mt-4 text-gray-600 tracking-widest uppercase text-[10px]">
+                            <a href="/about" class="hover:text-neon transition-colors">ABOUT</a>
+                            <a href="/link" class="hover:text-neon transition-colors">LINK_PURGER</a>
+                            <a href="/login" class="hover:text-neon transition-colors">LOGIN</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Absolute Bottom Bar -->
+        <div class="mt-8 pt-6 pb-4 border-t border-gray-900 flex flex-col md:flex-row justify-between text-[10px] text-gray-700 tracking-widest font-mono opacity-80 gap-2">
+            <p>&copy; 2026 NoTracer.com — {t('about.slogan').replace('// ', '')}</p>
+            <p class="md:text-right">// SHARE THE CONTENT. NOT YOUR DATA.</p>
+        </div>
+    </div>
 </div>
-
-<div class="w-full flex-col flex items-center gap-12">
-	<div class="text-center space-y-4">
-		<div class="text-6xl md:text-8xl font-black text-neon animate-pulse tracking-tighter">
-			{form?.newTotal || data.totalCleaned || 0}
-		</div>
-		<p class="text-gray-500 tracking-widest text-sm uppercase">{t('home.hero_stat')}</p>
-	</div>
-
-	<form 
-		method="POST" 
-		action="?/process"
-		class="w-full max-w-xl group relative"
-		use:enhance={() => {
-			loading = true;
-			return async ({ update }) => {
-				loading = false;
-				await update();
-			};
-		}}
-	>
-		<div class="absolute -inset-0.5 bg-neon opacity-20 group-hover:opacity-40 blur transition duration-500 rounded-lg"></div>
-		<div class="relative flex items-center border border-gray-800 bg-black rounded-lg overflow-hidden focus-within:border-neon focus-within:ring-1 focus-within:ring-neon transition-colors">
-			<span class="pl-4 text-neon font-bold {loading ? 'animate-pulse' : ''}">&gt;</span>
-			<input 
-				bind:this={inputEl}
-				type="url" 
-				name="url" 
-				required 
-				placeholder={t('home.input_placeholder')}
-				onpaste={handlePaste}
-				value={form?.original || ''}
-				class="w-full bg-transparent text-gray-200 placeholder-gray-600 px-4 py-4 md:py-5 outline-none font-mono"
-				autocomplete="off"
-				spellcheck="false"
-			/>
-			{#if loading}
-				<div class="pr-4 text-neon">
-					<span class="animate-spin inline-block font-mono">|</span>
-				</div>
-			{:else}
-				<button type="submit" class="bg-gray-900 hover:bg-neon hover:text-black text-neon transition-colors font-bold px-6 py-4 md:py-5 border-l border-gray-800">
-					{t('home.btn_clean')}
-				</button>
-			{/if}
-		</div>
-		
-		{#if data.user}
-		<div class="mt-4 flex items-center bg-gray-900/50 border border-gray-800 rounded px-4 py-2 focus-within:border-neon focus-within:ring-1 focus-within:ring-neon transition-colors">
-			<span class="text-gray-500 font-mono text-sm pr-2 border-r border-gray-800">notracer.com/</span>
-			<input 
-				type="text" 
-				name="customSlug" 
-				placeholder={t('home.custom_alias')} 
-				pattern="[a-zA-Z0-9_-]+"
-				class="w-full bg-transparent text-gray-300 placeholder-gray-600 px-3 outline-none font-mono text-sm"
-				autocomplete="off"
-				spellcheck="false"
-			/>
-		</div>
-		{:else}
-		<div class="mt-4 text-center">
-			<p class="text-[10px] text-gray-700 font-mono uppercase tracking-widest">
-				{t('home.auth_prompt')}
-			</p>
-		</div>
-		{/if}
-	</form>
-
-	{#if form?.error}
-		<div class="text-red-500 border border-red-900 bg-red-950/30 px-6 py-4 rounded font-mono text-center w-full max-w-xl">
-			[ERROR] {form.error}
-		</div>
-	{/if}
-
-	{#if form?.success}
-		<div class="w-full max-w-xl space-y-6">
-			<!-- Cleaned URL -->
-			<div class="space-y-2">
-				<p class="text-xs text-gray-500 uppercase tracking-widest">{t('home.result_dest')}</p>
-				<div class="border border-gray-800 bg-gray-900/50 p-4 rounded-lg break-all">
-					<a href={form.cleaned} target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-neon transition-colors">
-						{form.cleaned}
-					</a>
-				</div>
-			</div>
-
-			<!-- Short URL -->
-			<div class="space-y-2">
-				<p class="text-xs text-neon uppercase tracking-widest flex items-center gap-2">
-					<span class="w-2 h-2 rounded-full bg-neon animate-pulse hidden sm:inline-block"></span>
-					{t('home.result_short')}
-				</p>
-				<div class="border border-neon/50 bg-neon/5 p-4 rounded-lg flex items-center justify-between gap-4">
-					<a href={form.shortlink} target="_blank" class="text-neon font-bold text-lg hover:underline truncate">
-						{form.shortlink}
-					</a>
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div 
-						onclick={() => navigator.clipboard.writeText(form?.shortlink || '')}
-						class="text-xs bg-neon text-black px-3 py-2 font-bold hover:bg-white transition-colors uppercase rounded-sm whitespace-nowrap cursor-pointer"
-					>
-						{t('home.copy')}
-					</div>
-				</div>
-			</div>
-
-			<!-- Removed Trackers -->
-			{#if form?.removed && form.removed.length > 0}
-				<div class="space-y-2 pt-2">
-					<p class="text-xs text-red-500 uppercase tracking-widest flex items-center gap-2">
-						<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-						{t('home.result_garbage')}
-					</p>
-					<ul class="flex flex-wrap gap-2">
-						{#each form.removed as tracker}
-							<li class="bg-red-950/40 text-red-400 border border-red-900/50 px-3 py-1 text-xs rounded-sm font-mono flex items-center gap-1">
-								<span class="opacity-50">-</span>
-								{tracker}
-							</li>
-						{/each}
-					</ul>
-				</div>
-			{/if}
-		</div>
-	{/if}
-</div>
-
-<WelcomeModal />

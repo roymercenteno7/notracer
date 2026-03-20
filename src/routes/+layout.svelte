@@ -1,10 +1,14 @@
 <script lang="ts">
 	import '../app.css';
 	import { i18n } from '$lib/i18n';
+	import { page } from '$app/stores';
 	import type { LayoutData } from './$types';
 	let { children, data } = $props<{ children: any, data: LayoutData }>();
 
 	const t = (path: string) => i18n.t(path);
+
+	// Determine if we're on the landing page (which has its own custom terminal layout)
+	let isLandingPage = $derived($page.url.pathname === '/');
 </script>
 
 <svelte:head>
@@ -14,10 +18,14 @@
 	<meta property="og:description" content={t('about.problem_text').substring(0, 160)} />
 	<meta name="twitter:title" content="NoTracer | {t('about.slogan').replace('// ', '')}" />
 	<meta name="twitter:description" content={t('about.problem_text').substring(0, 160)} />
+	<meta property="og:image" content="https://notracer.com/og-image.png" />
+	<meta name="twitter:image" content="https://notracer.com/og-image.png" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
-<div class="min-h-screen w-full flex flex-col items-center justify-center p-4 selection:bg-neon selection:text-black">
-	<div class="w-full max-w-2xl mx-auto flex flex-col gap-8">
+<div class="min-h-screen w-full flex flex-col p-4 selection:bg-neon selection:text-black">
+	<div class="w-full max-w-5xl mx-auto flex flex-col gap-8">
+		{#if !isLandingPage}
 		<header class="text-center space-y-4">
 			<div class="flex justify-between items-start">
 				<div class="w-10"></div> <!-- Spacer -->
@@ -56,17 +64,20 @@
 				<a href="/about" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">About</a>
 			</nav>
 		</header>
+		{/if}
 		
 		<!-- Main Content -->
 		<main class="flex-1 w-full flex flex-col items-center">
 			{@render children()}
 		</main>
 		
+		{#if !isLandingPage}
 		<!-- Footer -->
 		<footer class="mt-12 text-center text-xs text-gray-600 tracking-wider">
 			<p>&copy; {new Date().getFullYear()} NoTracer.com</p>
 			<p class="mt-1">Built for privacy. Zero logs policy.</p>
 			<p class="mt-2 text-gray-700 font-mono">System notifications are sent via <span class="text-gray-500">noreply@notracer.com</span></p>
 		</footer>
+		{/if}
 	</div>
 </div>
