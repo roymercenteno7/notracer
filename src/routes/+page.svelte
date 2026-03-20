@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { i18n } from '$lib/i18n';
 	import { onMount } from 'svelte';
+	import { Activity } from 'lucide-svelte';
 	const t = (path: string) => i18n.t(path);
+
+    let { data } = $props();
+    let viewCount = $derived(data.viewCount || 0);
+    let recentPosts = $derived(data.recentPosts || []);
 
     let currentTime = $state("");
 
@@ -63,7 +68,7 @@
 
         <!-- Huge Title Section -->
         <div class="mt-8 space-y-6">
-            <h1 class="text-5xl md:text-8xl font-black text-neon tracking-tighter" style="text-shadow: 0 0 40px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0,255,65, 0.3);">
+            <h1 class="text-4xl sm:text-5xl md:text-8xl font-black text-neon tracking-tighter" style="text-shadow: 0 0 40px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0,255,65, 0.3);">
                 [ SYSTEM: NOTRACER_SUITE ]<span class="animate-pulse">_</span>
             </h1>
             <p class="text-gray-600 text-sm md:text-lg tracking-widest">
@@ -223,6 +228,35 @@
             </div>
         </div>
 
+        {#if recentPosts.length > 0}
+        <!-- Latest Bulletins Section -->
+        <div class="mt-8 border-t border-gray-900 pt-8">
+            <h2 class="text-neon text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="animate-pulse">●</span> {t('blog.latest')}
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {#each recentPosts as post}
+                    <article class="border border-gray-900 p-4 hover:border-neon/30 transition-colors group flex flex-col justify-between" style="background: rgba(10, 10, 10, 0.4);">
+                        <div>
+                            <div class="text-[10px] text-gray-500 tracking-widest mb-2 border-b border-gray-900 pb-2">
+                                {post.date}
+                            </div>
+                            <h3 class="text-gray-200 font-bold uppercase text-sm mb-3 group-hover:text-neon transition-colors">
+                                {post.title[i18n.lang] || post.title['en']}
+                            </h3>
+                            <p class="text-xs text-gray-500 line-clamp-2">
+                                {post.excerpt[i18n.lang] || post.excerpt['en']}
+                            </p>
+                        </div>
+                        <a href="/blog/{post.slug}" class="mt-4 text-[10px] uppercase text-neon tracking-widest font-bold">
+                            {t('blog.read')}
+                        </a>
+                    </article>
+                {/each}
+            </div>
+        </div>
+        {/if}
+
         <!-- Footer Section -->
         <div class="mt-16 border-t border-gray-900/50 pt-16">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -262,8 +296,9 @@
                             <div class="text-gray-600 mb-1">{t('landing.legal')}</div>
                             <a href="mailto:admin@notracer.com" class="text-neon hover:underline transition-colors">> admin@notracer.com</a>
                         </div>
-                        <div class="flex gap-4 mt-4 text-gray-600 tracking-widest uppercase text-[10px]">
+                        <div class="flex flex-wrap gap-4 mt-4 text-gray-600 tracking-widest uppercase text-[10px]">
                             <a href="/about" class="hover:text-neon transition-colors">ABOUT</a>
+                            <a href="/blog" class="hover:text-neon transition-colors">{t('nav.blog')}</a>
                             <a href="/link" class="hover:text-neon transition-colors">LINK_PURGER</a>
                             <a href="/login" class="hover:text-neon transition-colors">LOGIN</a>
                         </div>
@@ -273,9 +308,15 @@
         </div>
 
         <!-- Absolute Bottom Bar -->
-        <div class="mt-8 pt-6 pb-4 border-t border-gray-900 flex flex-col md:flex-row justify-between text-[10px] text-gray-700 tracking-widest font-mono opacity-80 gap-2">
-            <p>&copy; 2026 NoTracer.com — {t('about.slogan').replace('// ', '')}</p>
-            <p class="md:text-right">// SHARE THE CONTENT. NOT YOUR DATA.</p>
+        <div class="mt-8 pt-6 pb-4 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-700 tracking-widest font-mono opacity-80 gap-4">
+            <p class="order-2 md:order-1 text-center md:text-left">&copy; 2026 NoTracer.com — {t('about.slogan').replace('// ', '')}</p>
+            
+            <div class="order-1 md:order-2 flex items-center gap-2 border border-gray-900 bg-black px-3 py-1 text-neon/80" title="Total Protocol Validations">
+                <Activity size={12} class="animate-pulse" />
+                <span class="font-bold">{viewCount} {t('home.views')}</span>
+            </div>
+
+            <p class="order-3 md:order-3 text-center md:text-right">// SHARE THE CONTENT. NOT YOUR DATA.</p>
         </div>
     </div>
 </div>

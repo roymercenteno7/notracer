@@ -13,13 +13,15 @@
         "dashboard": "Dashboard",
         "login": "Login",
         "register": "Register",
+        "blog": "Bulletins",
         "logout": "Logout",
         "status_beta": "SYSTEM STATUS: BETA 1.0"
     },
     "home": {
-        "hero_stat": "Trackers Eliminated Globally",
-        "input_placeholder": "Paste URL to sanitize...",
-        "btn_clean": "CLEAN",
+        "hero_stat": "Global Trackers Eliminated",
+        "description_stat": "The Link Purger algorithm intercepts and automatically amputates spy tracking parameters before they reach the destination server.",
+        "start": "Start Purging",
+        "views": "SECURE_NODES",
         "custom_alias": "custom-slug (optional)",
         "auth_prompt": "> Login or Register to unlock custom aliases & non-expiring links.",
         "result_dest": "Sanitized Destination_",
@@ -144,6 +146,22 @@
         "comms_channel": "> COMMS_CHANNEL",
         "support": "[ Support ]",
         "legal": "[ Legal ]"
+    },
+    "blog": {
+        "title": "[ BULLETINS_ARCHIVE ]",
+        "subtitle": "// DECLASSIFIED CYBERSECURITY INTELLIGENCE REPOSITORY",
+        "declassified": "[ DECLASSIFIED ]",
+        "read": "> READ_REPORT",
+        "empty": "[ NO DATA FOUND IN THE ARCHIVE ]",
+        "back": "[ RETURN_TO_ARCHIVE ]",
+        "end": "// END_OF_TRANSMISSION",
+        "close": "> CLOSE_ARCHIVE",
+        "latest": "LATEST_TRANSMISSIONS_"
+    },
+    "cookie": {
+        "title": "[ COOKIE_ALERT ]",
+        "text": "This site doesn't need your cookies, you can keep them. We track no one.",
+        "btn": "> UNDERSTOOD"
     },
     "error_page": {
         "subtitle": "The requested entity does not exist, has been incinerated for security, or exceeds your clearance level.",

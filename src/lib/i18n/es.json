@@ -10,11 +10,12 @@
         "start": "Comenzar a Limpiar"
     },
     "nav": {
-        "dashboard": "Panel",
-        "login": "Ingresar",
+        "dashboard": "Dashboard",
+        "login": "Acceder",
         "register": "Registrarse",
-        "logout": "Cerrar Sesión",
-        "status_beta": "ESTADO DEL SISTEMA: BETA 1.0"
+        "logout": "Salir",
+        "status_beta": "ESTADO DEL SISTEMA: BETA 1.0",
+        "blog": "Boletines"
     },
     "home": {
         "hero_stat": "Trackers Eliminados Globalmente",
@@ -25,7 +26,10 @@
         "result_dest": "Destino Desinfectado_",
         "result_short": "Enlace Privado Generado_",
         "result_garbage": "Basura Eliminada_",
-        "copy": "Copiar"
+        "copy": "Copiar",
+        "description_stat": "El algoritmo de Link Purger intercepta y amputa automáticamente parámetros espía de rastreo antes de que toquen el servidor destino.",
+        "start": "Comenzar a Limpiar",
+        "views": "NODOS_SEGUROS"
     },
     "tutorial": {
         "step1_title": "[ RASTREADORES_INVISIBLES ]",
@@ -144,6 +148,22 @@
         "comms_channel": "> CANAL_DE_COMUNICACIONES",
         "support": "[ Support ]",
         "legal": "[ Legal ]"
+    },
+    "blog": {
+        "title": "[ ARCHIVO_DE_BOLETINES ]",
+        "subtitle": "// REPOSITORIO DESCLASIFICADO DE INTELIGENCIA SOBRE CIBERSEGURIDAD",
+        "declassified": "[ DESCLASIFICADO ]",
+        "read": "> LEER_REPORTE",
+        "empty": "[ NO DATA FOUND IN THE ARCHIVE ]",
+        "back": "[ VOLVER_AL_ARCHIVO ]",
+        "end": "// FIN_DE_LA_TRANSMISIÓN",
+        "close": "> CERRAR_ARCHIVO",
+        "latest": "ÚLTIMAS_TRANSMISIONES_"
+    },
+    "cookie": {
+        "title": "[ ALERTA_DE_GALLETAS ]",
+        "text": "Este sitio no necesita tus galletas (cookies), puedes conservarlas. Tu privacidad está intacta.",
+        "btn": "> ENTENDIDO"
     },
     "error_page": {
         "subtitle": "La entidad solicitada no existe, ha sido incinerada por seguridad o excede tu credencial de acceso.",

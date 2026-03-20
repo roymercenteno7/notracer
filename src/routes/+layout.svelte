@@ -2,6 +2,8 @@
 	import '../app.css';
 	import { i18n } from '$lib/i18n';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { Cookie, Ban } from 'lucide-svelte';
 	import type { LayoutData } from './$types';
 	let { children, data } = $props<{ children: any, data: LayoutData }>();
 
@@ -9,6 +11,21 @@
 
 	// Determine if we're on the landing page (which has its own custom terminal layout)
 	let isLandingPage = $derived($page.url.pathname === '/');
+
+	let showCookieModal = $state(false);
+
+	onMount(() => {
+		if (!localStorage.getItem('cookie_joke_seen')) {
+			setTimeout(() => {
+				showCookieModal = true;
+			}, 1500);
+		}
+	});
+
+	function closeCookieModal() {
+		localStorage.setItem('cookie_joke_seen', 'true');
+		showCookieModal = false;
+	}
 </script>
 
 <svelte:head>
@@ -52,6 +69,7 @@
 			
 			<nav class="flex gap-6 justify-center items-center py-4 border-y border-gray-900 mt-4">
 				<a href="/" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Home</a>
+				<a href="/blog" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">{t('nav.blog')}</a>
 				{#if data.user}
 					<a href="/dashboard" class="text-neon hover:underline font-bold text-xs uppercase tracking-widest">{t('nav.dashboard')}</a>
 					<form action="/logout" method="POST" class="inline">
@@ -81,3 +99,38 @@
 		{/if}
 	</div>
 </div>
+
+{#if showCookieModal}
+	<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-950/80 backdrop-blur-md animate-fade-in-up">
+		<div class="relative w-full max-w-sm bg-black border border-neon p-6 shadow-[0_0_40px_rgba(0,255,65,0.15)] flex flex-col items-center text-center">
+			
+			<div class="relative mt-2 mb-6">
+				<Cookie class="text-neon" size={48} />
+				<Ban class="text-red-500 absolute -top-2 -right-2 opacity-90" size={56} strokeWidth={2.5} />
+			</div>
+
+			<h3 class="font-bold font-mono text-neon text-sm uppercase tracking-[0.2em] border-b border-neon/30 pb-3 mb-4 w-full">
+				{t('cookie.title')}
+			</h3>
+			
+			<p class="text-xs text-gray-400 leading-relaxed font-sans mb-8 px-2">
+				{t('cookie.text')}
+			</p>
+
+			<button onclick={closeCookieModal} class="text-xs text-neon uppercase hover:bg-neon hover:text-black transition-all px-6 py-4 border border-neon w-full tracking-widest cursor-pointer font-bold font-mono">
+				{t('cookie.btn')}
+			</button>
+
+		</div>
+	</div>
+{/if}
+
+<style>
+	@keyframes fadeInUp {
+		from { opacity: 0; transform: translateY(20px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+	:global(.animate-fade-in-up) {
+		animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+</style>
