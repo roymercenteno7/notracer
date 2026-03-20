@@ -9,7 +9,7 @@ import { nanoid } from 'nanoid';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (locals.user) {
-        throw redirect(302, '/Dashboard');
+        throw redirect(302, '/dashboard');
     }
 
     return {
