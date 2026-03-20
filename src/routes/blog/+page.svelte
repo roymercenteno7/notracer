@@ -2,7 +2,7 @@
     import { posts } from '$lib/data/posts';
     import { i18n } from '$lib/i18n';
     
-    let t = $derived((path: string) => i18n.t(path));
+    const t = (path: string) => i18n.t(path);
 </script>
 
 <svelte:head>
@@ -22,7 +22,7 @@
                 {
                     "@type": "BlogPosting",
                     "headline": "{post.title['en']}",
-                    "url": "https://notracer.com/blog/{post.slug}",
+                    "url": "https://notracer.com/blog/{post.slug['en']}",
                     "datePublished": "{post.date}"
                 }{i < posts.length - 1 ? ',' : ''}
                 {/each}
@@ -51,7 +51,7 @@
                 </div>
                 
                 <h2 class="text-xl md:text-2xl font-bold text-gray-100 uppercase tracking-wider mb-4 group-hover:text-neon transition-colors">
-                    <a href="/blog/{post.slug}" class="block">
+                    <a href="/blog/{post.slug[i18n.lang] || post.slug['en']}" class="block">
                         {post.title[i18n.lang] || post.title['en']}
                     </a>
                 </h2>
@@ -60,7 +60,7 @@
                     {post.excerpt[i18n.lang] || post.excerpt['en']}
                 </p>
 
-                <a href="/blog/{post.slug}" class="inline-block border text-xs border-gray-700 text-gray-400 hover:text-neon hover:border-neon transition-colors font-bold uppercase tracking-widest px-4 py-2">
+                <a href="/blog/{post.slug[i18n.lang] || post.slug['en']}" class="inline-block border text-xs border-gray-700 text-gray-400 hover:text-neon hover:border-neon transition-colors font-bold uppercase tracking-widest px-4 py-2">
                     {t('blog.read')}
                 </a>
             </article>

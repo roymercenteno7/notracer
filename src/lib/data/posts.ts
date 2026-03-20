@@ -1,15 +1,18 @@
 export interface BlogPost {
-    slug: string;
+    slug: Record<'en' | 'es', string>;
     date: string;
-    title: { [key: string]: string };
-    excerpt: { [key: string]: string };
-    content: { [key: string]: string }; // HTML string
-    seoDescription: { [key: string]: string };
+    title: Record<'en' | 'es', string>;
+    excerpt: Record<'en' | 'es', string>;
+    content: Record<'en' | 'es', string>; // HTML string
+    seoDescription: Record<'en' | 'es', string>;
 }
 
 export const posts: BlogPost[] = [
     {
-        slug: 'anatomy-of-web-trackers',
+        slug: {
+            en: 'anatomy-of-web-trackers-utm-fbclid-privacy-threats',
+            es: 'anatomia-de-rastreadores-web-utm-fbclid-amenazas-privacidad'
+        },
         date: '2026-03-19',
         title: {
             es: 'La Anatomía de los Rastreadores Web (UTM, fbclid)',

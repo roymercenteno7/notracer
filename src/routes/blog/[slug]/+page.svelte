@@ -2,14 +2,15 @@
     import type { BlogPost } from '$lib/data/posts';
     import { i18n } from '$lib/i18n';
 
-    let { data } = $props<{ data: { post: BlogPost } }>();
+    let { data } = $props<{ data: { post: BlogPost, requestedLang: 'en' | 'es' } }>();
     let post = $derived(data.post);
-    let t = $derived((path: string) => i18n.t(path));
+    let lang = $derived(data.requestedLang);
+    const t = (path: string) => i18n.t(path);
 
-    let currentTitle = $derived(post.title[i18n.lang] || post.title['en']);
-    let currentDesc = $derived(post.seoDescription[i18n.lang] || post.seoDescription['en']);
-    let currentExcerpt = $derived(post.excerpt[i18n.lang] || post.excerpt['en']);
-    let currentContent = $derived(post.content[i18n.lang] || post.content['en']);
+    let currentTitle = $derived(post.title[lang]);
+    let currentDesc = $derived(post.seoDescription[lang]);
+    let currentExcerpt = $derived(post.excerpt[lang]);
+    let currentContent = $derived(post.content[lang]);
 </script>
 
 <svelte:head>
@@ -27,8 +28,8 @@
         {
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": "{post.title['en']}",
-            "description": "{post.seoDescription['en']}",
+            "headline": "{post.title[lang]}",
+            "description": "{post.seoDescription[lang]}",
             "datePublished": "{post.date}",
             "author": {
                 "@type": "Organization",

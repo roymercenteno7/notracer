@@ -248,7 +248,7 @@
                                 {post.excerpt[i18n.lang] || post.excerpt['en']}
                             </p>
                         </div>
-                        <a href="/blog/{post.slug}" class="mt-4 text-[10px] uppercase text-neon tracking-widest font-bold">
+                        <a href="/blog/{post.slug[i18n.lang] || post.slug['en']}" class="mt-4 text-[10px] uppercase text-neon tracking-widest font-bold">
                             {t('blog.read')}
                         </a>
                     </article>
