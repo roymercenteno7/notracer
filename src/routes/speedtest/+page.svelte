@@ -12,8 +12,8 @@
     let progress = $state(0);
     let error = $state('');
 
-    const TEST_DURATION = 8000;
-    const CONCURRENT_CONNECTIONS = 4;
+    const TEST_DURATION = 5000;
+    const CHUNK_SIZE = 1024 * 1024;
 
     async function runSpeedTest() {
         status = 'testing';
@@ -45,65 +45,49 @@
 
     async function runDownloadTest() {
         const startTime = performance.now();
-        let totalBytes = 0;
+        let bytesTransferred = 0;
         
-        const downloads: Promise<void>[] = [];
+        const testUrl = '/api/speedtest/download';
 
-        for (let i = 0; i < CONCURRENT_CONNECTIONS; i++) {
-            downloads.push((async () => {
-                while (performance.now() - startTime < TEST_DURATION) {
-                    try {
-                        const res = await fetch('/api/speedtest/download?t=' + Date.now(), { 
-                            cache: 'no-store',
-                            mode: 'cors'
-                        });
-                        const blob = await res.blob();
-                        totalBytes += blob.size;
-                    } catch {
-                        break;
-                    }
-                }
-            })());
+        while (performance.now() - startTime < TEST_DURATION) {
+            try {
+                const res = await fetch(testUrl + '?t=' + Date.now(), { cache: 'no-store' });
+                const blob = await res.blob();
+                bytesTransferred += blob.size;
+            } catch {
+                break;
+            }
         }
 
-        await Promise.all(downloads);
-
         const duration = (performance.now() - startTime) / 1000;
-        const speedMbps = ((totalBytes * 8) / 1000000) / duration;
+        const speedMbps = (bytesTransferred * 8) / (duration * 1000000);
         
-        return { speed: Math.max(0.1, Math.round(speedMbps * 10) / 10) };
+        return { speed: Math.round(speedMbps * 100) / 100 };
     }
 
     async function runUploadTest() {
         const startTime = performance.now();
-        let totalBytes = 0;
+        let bytesTransferred = 0;
         
-        const uploads: Promise<void>[] = [];
-        const chunk = new Uint8Array(256 * 1024);
-
-        for (let i = 0; i < CONCURRENT_CONNECTIONS; i++) {
-            uploads.push((async () => {
-                while (performance.now() - startTime < TEST_DURATION) {
-                    try {
-                        await fetch('/api/speedtest/upload', {
-                            method: 'POST',
-                            body: chunk,
-                            cache: 'no-store'
-                        });
-                        totalBytes += chunk.length;
-                    } catch {
-                        break;
-                    }
-                }
-            })());
+        const chunk = new Uint8Array(CHUNK_SIZE);
+        
+        while (performance.now() - startTime < TEST_DURATION) {
+            try {
+                await fetch('/api/speedtest/upload', {
+                    method: 'POST',
+                    body: chunk,
+                    cache: 'no-store'
+                });
+                bytesTransferred += CHUNK_SIZE;
+            } catch {
+                break;
+            }
         }
 
-        await Promise.all(uploads);
-
         const duration = (performance.now() - startTime) / 1000;
-        const speedMbps = ((totalBytes * 8) / 1000000) / duration;
+        const speedMbps = (bytesTransferred * 8) / (duration * 1000000);
         
-        return { speed: Math.max(0.1, Math.round(speedMbps * 10) / 10) };
+        return { speed: Math.round(speedMbps * 100) / 100 };
     }
 
     function formatSpeed(speed: number): string {
