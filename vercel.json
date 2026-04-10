@@ -1,10 +1,5 @@
 {
     "buildCommand": "npm run build",
-    "installCommand": "npm install --ignore-scripts",
-    "framework": "sveltekit",
-    "functions": {
-        "src/routes/api/convert/**": {
-            "runtime": "nodejs20.x"
-        }
-    }
+    "installCommand": "npm install",
+    "framework": "sveltekit"
 }

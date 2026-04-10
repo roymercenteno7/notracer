@@ -10,7 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"postinstall": "prisma generate"
+		"postinstall": "prisma generate && npm rebuild sharp"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",
@@ -32,8 +32,9 @@
 		"@upstash/redis": "^1.37.0",
 		"bcrypt": "^6.0.0",
 		"ioredis": "^5.10.0",
-		"lucide-svelte": "^0.577.0",
+		"lucide-svelte": "^1.0.1",
 		"nanoid": "^5.1.6",
-		"nodemailer": "^8.0.2"
+		"nodemailer": "^8.0.2",
+		"sharp": "^0.34.5"
 	}
 }
