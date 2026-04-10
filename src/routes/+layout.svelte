@@ -70,6 +70,9 @@
 			<nav class="flex gap-6 justify-center items-center py-4 border-y border-gray-900 mt-4">
 				<a href="/" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Home</a>
 				<a href="/blog" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">{t('nav.blog')}</a>
+				<a href="/link" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Link Purger</a>
+				<a href="/media" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Media</a>
+				<a href="/speedtest" class="hover:text-neon transition-colors text-xs uppercase tracking-widest">Speed Test</a>
 				{#if data.user}
 					<a href="/dashboard" class="text-neon hover:underline font-bold text-xs uppercase tracking-widest">{t('nav.dashboard')}</a>
 					<form action="/logout" method="POST" class="inline">
