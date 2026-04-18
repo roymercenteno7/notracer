@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Gauge, Download, Upload, Timer, ArrowRight, Loader2, CheckCircle, AlertCircle, Wifi } from 'lucide-svelte';
+    import { onMount } from 'svelte';
+    import { Gauge, Download, Upload, Timer, ArrowRight, Loader2, CheckCircle, AlertCircle, Wifi, ExternalLink } from 'lucide-svelte';
     import { i18n } from '$lib/i18n';
 
     const t = (path: string) => i18n.t(path);
@@ -12,8 +13,10 @@
     let progress = $state(0);
     let error = $state('');
 
-    const TEST_DURATION = 5000;
-    const CHUNK_SIZE = 1024 * 1024;
+    const TEST_DURATION = 8000;
+    const CHUNK_SIZE = 2 * 1024 * 1024;
+    const CONCURRENT_DOWNLOADS = 4;
+    const CONCURRENT_UPLOADS = 3;
 
     async function runSpeedTest() {
         status = 'testing';
@@ -47,17 +50,25 @@
         const startTime = performance.now();
         let bytesTransferred = 0;
         
-        const testUrl = '/api/speedtest/download';
-
-        while (performance.now() - startTime < TEST_DURATION) {
-            try {
-                const res = await fetch(testUrl + '?t=' + Date.now(), { cache: 'no-store' });
-                const blob = await res.blob();
-                bytesTransferred += blob.size;
-            } catch {
-                break;
+        async function downloadChunk(url: string): Promise<number> {
+            let bytes = 0;
+            while (performance.now() - startTime < TEST_DURATION) {
+                try {
+                    const res = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
+                    const blob = await res.blob();
+                    bytes += blob.size;
+                } catch {
+                    break;
+                }
             }
+            return bytes;
         }
+
+        const testUrl = '/api/speedtest/download';
+        const downloads = Array.from({ length: CONCURRENT_DOWNLOADS }, () => downloadChunk(testUrl));
+        
+        const results = await Promise.all(downloads);
+        bytesTransferred = results.reduce((a, b) => a + b, 0);
 
         const duration = (performance.now() - startTime) / 1000;
         const speedMbps = (bytesTransferred * 8) / (duration * 1000000);
@@ -69,25 +80,37 @@
         const startTime = performance.now();
         let bytesTransferred = 0;
         
-        const chunk = new Uint8Array(CHUNK_SIZE);
-        
-        while (performance.now() - startTime < TEST_DURATION) {
-            try {
-                await fetch('/api/speedtest/upload', {
-                    method: 'POST',
-                    body: chunk,
-                    cache: 'no-store'
-                });
-                bytesTransferred += CHUNK_SIZE;
-            } catch {
-                break;
+        async function uploadChunk(): Promise<number> {
+            let bytes = 0;
+            while (performance.now() - startTime < TEST_DURATION) {
+                try {
+                    const chunk = new Uint8Array(CHUNK_SIZE);
+                    await fetch('/api/speedtest/upload', {
+                        method: 'POST',
+                        body: chunk,
+                        cache: 'no-store'
+                    });
+                    bytes += CHUNK_SIZE;
+                } catch {
+                    break;
+                }
             }
+            return bytes;
         }
+
+        const uploads = Array.from({ length: CONCURRENT_UPLOADS }, () => uploadChunk());
+        
+        const results = await Promise.all(uploads);
+        bytesTransferred = results.reduce((a, b) => a + b, 0);
 
         const duration = (performance.now() - startTime) / 1000;
         const speedMbps = (bytesTransferred * 8) / (duration * 1000000);
         
         return { speed: Math.round(speedMbps * 100) / 100 };
+    }
+
+    function openExternalTest() {
+        window.open('https://fast.com', '_blank');
     }
 
     function formatSpeed(speed: number): string {
@@ -250,6 +273,22 @@
 
     <div class="border border-gray-900 rounded-lg p-6 bg-[#080808]/50">
         <h3 class="text-neon text-xs uppercase tracking-widest mb-4">Información</h3>
+        
+        <div class="mb-6 p-4 border border-neon/20 rounded-lg bg-neon/[0.02]">
+            <div class="flex flex-col gap-3">
+                <p class="text-gray-400 text-xs">
+                    Este speedtest usa el servidor de Vercel. Para mayor precisión, usa servidores globales:
+                </p>
+                <button
+                    onclick={openExternalTest}
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-neon/50 text-neon hover:bg-neon hover:text-black transition-colors text-xs font-bold uppercase tracking-widest"
+                >
+                    <ExternalLink size={14} />
+                    Fast.com (Netflix)
+                </button>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
             <div class="space-y-1">
                 <p class="text-gray-400 font-medium">Descarga</p>
