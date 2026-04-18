@@ -6,8 +6,10 @@ type Translations = typeof en;
 const dictionaries: Record<string, Translations> = { en, es };
 
 // Svelte 5 Rune for Global State
+type Lang = 'en' | 'es';
+
 class I18nManager {
-    lang = $state('en');
+    lang: Lang = $state('en');
 
     constructor() {
         if (browser) {
@@ -16,13 +18,13 @@ class I18nManager {
                 this.lang = saved;
             } else {
                 // Auto-detect from browser
-                const navLang = navigator.language.split('-')[0];
+                const navLang = navigator.language.split('-')[0] as Lang;
                 this.lang = dictionaries[navLang] ? navLang : 'en';
             }
         }
     }
 
-    setLang(l: 'en' | 'es') {
+    setLang(l: Lang) {
         this.lang = l;
         if (browser) localStorage.setItem('notracer_lang', l);
     }

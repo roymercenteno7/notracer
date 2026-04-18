@@ -63,7 +63,7 @@ async function convertImage(file: File) {
 
 // Forzar runtime Node.js (no Edge) porque Sharp requiere binaries nativos
 export const config = {
-	runtime: 'nodejs'
+	runtime: 'nodejs20.x'
 };
 
 export const POST: RequestHandler = async ({ request }) => {
