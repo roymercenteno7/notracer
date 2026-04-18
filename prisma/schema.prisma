@@ -13,6 +13,7 @@ model User {
   passwordHash String?
   createdAt    DateTime @default(now())
   links        Link[]
+  qrCodes     QrCode[]
 }
 
 model Link {
@@ -22,7 +23,16 @@ model Link {
   cleanedUrl  String
   userId      String?
   createdAt   DateTime  @default(now())
-  clicks      Int       @default(0)
+  clicks     Int       @default(0)
   expiresAt   DateTime?
-  user        User?     @relation(fields: [userId], references: [id])
+  user       User?     @relation(fields: [userId], references: [id])
+}
+
+model QrCode {
+  id          String   @id @default(cuid())
+  name        String
+  url        String
+  userId     String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
 }

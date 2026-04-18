@@ -137,7 +137,7 @@
         "m3_title": "GHOST_SEND",
         "m3_desc": "Send files and messages that self-destruct after reading. Zero-knowledge encryption, no accounts needed.",
         "m4_title": "SECURE_QR",
-        "m4_desc": "Generates QR codes routed through privacy relays. Hides the destination from scanners and analytics platforms.",
+        "m4_desc": "Generate instant QR codes for any link. Download or save to your account.",
         "m5_title": "SPEED_TEST",
         "m5_desc": "Measures your bandwidth without analytics or tracking. Diagnose your connection with locally generated data, zero third-parties.",
         "about_resistance": "> ABOUT_THE_RESISTANCE",
@@ -220,5 +220,15 @@
         "404_status": "STATUS:",
         "404_reachable": "UNREACHABLE",
         "404_glitch": "GLITCH_DETECTED"
+    },
+    "qr": {
+        "subtitle": "Generate instant QR codes for any link",
+        "url_label": "DESTINATION URL",
+        "name_label": "NAME (optional)",
+        "name_placeholder": "My QR Code",
+        "generate": "GENERATE QR",
+        "download": "DOWNLOAD",
+        "save": "SAVE TO MY ACCOUNT",
+        "saved": "MY QR CODES"
     }
 }

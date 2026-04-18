@@ -105,7 +105,7 @@
                 {t('landing.select_module')}
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <!-- CARD 1: LINK_PURGER -->
                 <div class="border border-gray-800 border-t-neon bg-[#080808] p-6 flex flex-col hover:border-neon/50 transition-colors group">
                     <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-600">
@@ -166,7 +166,7 @@
                     </a>
                 </div>
 
-                <!-- CARD 3: GHOST_SEND -->
+<!-- CARD 3: GHOST_SEND -->
                 <div class="border border-gray-900 bg-[#080808] p-6 flex flex-col opacity-60 pointer-events-none">
                     <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-700">
                         <div class="flex items-center gap-2">
@@ -190,40 +190,42 @@
                         </div>
                         <span class="text-gray-700">+500 XP</span>
                     </div>
-
+                    
                     <div class="w-full border border-gray-900 bg-black text-gray-800 text-center py-3 font-bold uppercase tracking-widest text-xs">
                         {t('landing.access_denied')}
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- CARD 4: SECURE_QR -->
-                <div class="border border-gray-900 bg-[#080808] p-6 flex flex-col opacity-60 pointer-events-none">
-                    <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-700">
+<!-- CARD 4: SECURE_QR -->
+                <div class="border border-gray-800 border-t-neon bg-[#080808] p-6 flex flex-col hover:border-neon/50 transition-colors group">
+                    <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-600">
                         <div class="flex items-center gap-2">
                             <span class="text-lg leading-none">⬢</span> M-04
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-gray-700"></span> {t('landing.blocked')}
+                        <div class="flex items-center gap-2 text-neon">
+                            <span class="w-1.5 h-1.5 rounded-full bg-neon"></span> {t('landing.operational')}
                         </div>
                     </div>
                     
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-400 tracking-wider mb-4">{t('landing.m4_title')}</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-neon transition-colors">{t('landing.m4_title')}</h2>
                     
-                    <p class="text-gray-600 text-sm leading-relaxed mb-8 flex-1">
+                    <p class="text-gray-500 text-sm leading-relaxed mb-8 flex-1">
                         {t('landing.m4_desc')}
                     </p>
-
+                    
                     <div class="flex justify-between items-center text-[10px] tracking-widest mb-6">
                         <div class="flex gap-2">
-                            <span class="text-yellow-700/50 border border-yellow-900/30 px-2 py-0.5">{t('landing.wip')}</span>
-                            <span class="text-gray-600 border border-gray-800 px-2 py-0.5">{t('landing.medium')}</span>
+                            <span class="text-neon border border-green-900/50 px-2 py-0.5">{t('landing.active')}</span>
+                            <span class="text-gray-300 border border-gray-600 px-2 py-0.5">{t('landing.easy')}</span>
                         </div>
-                        <span class="text-gray-700">+300 XP</span>
+                        <span class="text-gray-600">+100 XP</span>
                     </div>
-
-                    <div class="w-full border border-gray-900 bg-black text-gray-800 text-center py-3 font-bold uppercase tracking-widest text-xs">
-                        {t('landing.access_denied')}
-                    </div>
+                    
+                    <a href="/qr" class="block w-full border border-neon/50 bg-neon/10 hover:bg-neon hover:text-black text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
+                        {t('landing.deploy_now')}
+                    </a>
                 </div>
 
                 <!-- CARD 5: SPEED_TEST -->
@@ -256,7 +258,6 @@
                     </a>
                 </div>
             </div>
-        </div>
 
         {#if recentPosts.length > 0}
         <!-- Latest Bulletins Section -->
@@ -349,4 +350,3 @@
             <p class="order-3 md:order-3 text-center md:text-right">// SHARE THE CONTENT. NOT YOUR DATA.</p>
         </div>
     </div>
-</div>
