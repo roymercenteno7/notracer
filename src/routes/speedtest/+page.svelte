@@ -120,8 +120,15 @@
 </script>
 
 <svelte:head>
-    <title>Speed Test | NoTracer</title>
-    <meta name="description" content={t('speedtest.description')} />
+    <title>Speed Test | NoTracer - Check Your Connection</title>
+    <meta name="description" content="Test your internet connection speed. Measure download and upload bandwidth without third-party tracking." />
+    <meta property="og:title" content="Speed Test | NoTracer" />
+    <meta property="og:description" content="Test your internet speed without third-party trackers." />
+    <meta property="og:image" content="https://notracer.com/og-image.png" />
+    <meta name="twitter:title" content="Speed Test | NoTracer" />
+    <meta name="twitter:description" content="Test your connection speed privately." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://notracer.com/speedtest" />
 </svelte:head>
 
 <div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">

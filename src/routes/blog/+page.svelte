@@ -6,17 +6,24 @@
 </script>
 
 <svelte:head>
-    <title>{t('blog.title')} | NoTracer_Suite</title>
-    <meta name="description" content={t('blog.subtitle')} />
+    <title>Privacy Bulletins | NoTracer - Security Intelligence</title>
+    <meta name="description" content="Technical intelligence on web tracking, QR code privacy, image metadata removal, and digital identity protection." />
+    <meta property="og:title" content="Privacy Bulletins | NoTracer" />
+    <meta property="og:description" content="Security intelligence on web privacy and tracking." />
+    <meta property="og:image" content="https://notracer.com/og-image.png" />
+    <meta name="twitter:title" content="Privacy Bulletins | NoTracer" />
+    <meta name="twitter:description" content="Security intelligence on web privacy." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://notracer.com/blog" />
 
-    <!-- JSON-LD Blog Schema for Sitelinks/Rich Snippets -->
+    <!-- JSON-LD Blog Schema -->
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
             "@type": "Blog",
-            "name": "NoTracer Data Resistance Bulletins",
+            "name": "NoTracer Privacy Bulletins",
             "url": "https://notracer.com/blog",
-            "description": "Technical cybersecurity intelligence reports addressing web surveillance and operational privacy workflows.",
+            "description": "Technical cybersecurity intelligence on web surveillance and privacy.",
             "blogPost": [
                 {#each posts as post, i}
                 {

@@ -10,6 +10,93 @@ export interface BlogPost {
 export const posts: BlogPost[] = [
     {
         slug: {
+            en: 'qr-codes-privacy-anonymous-digital-identity',
+            es: 'codigos-qr-privacidad-identidad-digital-anonima'
+        },
+        date: '2026-04-18',
+        title: {
+            es: 'QR Codes: La Última Frontera de la Privacidad Digital',
+            en: 'QR Codes: The Last Frontier of Digital Privacy'
+        },
+        excerpt: {
+            es: 'Por qué los códigos QR pueden ser más peligrosos que las cookies y cómo proteger tu identidad digital.',
+            en: 'Why QR codes can be more dangerous than cookies and how to protect your digital identity.'
+        },
+        seoDescription: {
+            es: 'Análisis técnico: Los códigos QR rastrean tu ubicación, dispositivo y hábitos de navegación. Aprende a generar QR anónimaos y proteger tu privacidad.',
+            en: 'Technical analysis: QR codes track your location, device, and browsing habits. Learn to generate anonymous QR and protect your privacy.'
+        },
+        content: {
+            es: `
+                <p>Cada vez que escaneas un código QR, no estás simplemente accediendo a una URL. Estás entregándote a ti mismo a una infraestructura de rastreo que sabe exactamente dónde estás, cuándo estuviste ahí, y qué hiciste a continuación.</p>
+                
+                <h2 class="text-2xl font-bold text-neon mt-8 mb-4 border-b border-gray-900 pb-2">El Metadata Oculto del QR</h2>
+                <p>Un código QR parece inofensivo — solo píxeles negros en un fondo blanco. Pero cada QR generado por plataformas comerciales contiene metadatos integrados:</p>
+                <ul class="list-disc pl-6 space-y-2 my-4 text-gray-400">
+                    <li><strong class="text-gray-300">ID Único:</strong> Un identificador que vincula tu escaneo directamente a tu perfil.</li>
+                    <li><strong class="text-gray-300">Timestamp:</strong> Registro exacto de cuándo y dónde escaneaste.</li>
+                    <li><strong class="text-gray-300">Geolocalización:</strong> Coordenadas del lugar físico donde accediste.</li>
+                    <li><strong class="text-gray-300"> fingerprinting de dispositivo:</strong> Información sobre tu teléfono, modelo, y sistema operativo.</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-neon mt-8 mb-4 border-b border-gray-900 pb-2">El Modelo de Negocio Escondido</h2>
+                <p>Empresas como QR Stuff, Bitly, y servicios de generación de QR "gratuitos" monetizan tus datos:</p>
+                <ul class="list-disc pl-6 space-y-2 my-4 text-gray-400">
+                    <li>Venden metadatos de escaneo a anunciantes y analistas de mercado</li>
+                    <li>Construyen perfiles de movimiento físico de millones de usuarios</li>
+                    <li>Correlacionan actividad online con offline</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-neon mt-8 mb-4 border-b border-gray-900 pb-2">El Protocolo NoTracer QR</h2>
+                <p>El generador de QR de NoTracer opera bajo principios opuestos:</p>
+                <ul class="list-disc pl-6 space-y-2 my-4 text-gray-400">
+                    <li><strong class="text-gray-300">Sin Registro:</strong> No requiere cuenta, email, o identificación</li>
+                    <li><strong class="text-gray-300">Sin Metadatos:</strong> Solo la URL que tú proporcionas, nada más</li>
+                    <li><strong class="text-gray-300">Sin Tracking:</strong> No registramos timestamps, ubicaciones, ni dispositivos</li>
+                    <li><strong class="text-gray-300">Local Generation:</strong> El QR se genera en tu navegador, no en nuestro servidor</li>
+                </ul>
+
+                <blockquote class="border-l-2 border-neon pl-4 py-2 mt-8 text-gray-300 italic opacity-80">
+                    "Escanea el código. No el rastreo. Comparte el enlace. No tus datos."
+                </blockquote>
+            `,
+            en: `
+                <p>Every time you scan a QR code, you're not just accessing a URL. You're handing yourself over to tracking infrastructure that knows exactly where you are, when you were there, and what you did next.</p>
+                
+                <h2 class="text-2xl font-bold text-neon mt-8 mb-4 border-b border-gray-900 pb-2">The Hidden QR Metadata</h2>
+                <p>A QR code looks harmless — just black pixels on a white background. But every commercially-generated QR contains embedded metadata:</p>
+                <ul class="list-disc pl-6 space-y-2 my-4 text-gray-400">
+                    <li><strong class="text-gray-300">Unique ID:</strong> An identifier that links your scan directly to your profile.</li>
+                    <li><strong class="text-gray-300">Timestamp:</strong> Exact record of when and where you scanned.</li>
+                    <li><strong class="text-gray-300">Geolocation:</strong> Coordinates of the physical place where you accessed.</li>
+                    <li><strong class="text-gray-300">Device Fingerprinting:</strong> Information about your phone, model, and OS.</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-neon mt-8 mb-4 border-b border-gray-900 pb-2">The Hidden Business Model</h2>
+                <p>Companies like QR Stuff, Bitly, and "free" QR generators monetize your data:</p>
+                <ul class="list-disc pl-6 space-y-2 my-4 text-gray-400">
+                    <li>Sell scan metadata to advertisers and market analysts</li>
+                    <li>Build physical movement profiles of millions of users</li>
+                    <li>Correlate online activity with offline behavior</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-neon mt-8 mb-4 border-b border-gray-900 pb-2">The NoTracer QR Protocol</h2>
+                <p>The NoTracer QR generator operates under opposite principles:</p>
+                <ul class="list-disc pl-6 space-y-2 my-4 text-gray-400">
+                    <li><strong class="text-gray-300">No Registration:</strong> No account, email, or identification required</li>
+                    <li><strong class="text-gray-300">No Metadata:</strong> Only the URL you provide, nothing else</li>
+                    <li><strong class="text-gray-300">No Tracking:</strong> We don't log timestamps, locations, or devices</li>
+                    <li><strong class="text-gray-300">Local Generation:</strong> QR generates in your browser, not our server</li>
+                </ul>
+
+                <blockquote class="border-l-2 border-neon pl-4 py-2 mt-8 text-gray-300 italic opacity-80">
+                    "Scan the code. Not the tracking. Share the link. Not your data."
+                </blockquote>
+            `
+        }
+    },
+    {
+        slug: {
             en: 'anatomy-of-web-trackers-utm-fbclid-privacy-threats',
             es: 'anatomia-de-rastreadores-web-utm-fbclid-amenazas-privacidad'
         },

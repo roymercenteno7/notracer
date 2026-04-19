@@ -5,6 +5,10 @@ import { cleanUrl } from '$lib/server/cleaner';
 import { redis } from '$lib/server/redis';
 import { nanoid } from 'nanoid';
 
+export const config = {
+    runtime: 'nodejs20.x'
+};
+
 export const POST: RequestHandler = async ({ request, locals }) => {
     // 1. Auth Check (The extension must be on the same domain or have session cookies)
     if (!locals.user) {

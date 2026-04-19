@@ -9,6 +9,7 @@
     let { data } = $props();
     let qrCodes = $derived(data.qrCodes || []);
     let user = $derived(data.user);
+    let totalGenerated = $derived(data.totalGenerated || 0);
 
     let url = $state('');
     let name = $state('');
@@ -38,6 +39,8 @@
                 errorCorrectionLevel: 'H'
             });
             generatedQr = canvas.toDataURL('image/png');
+            
+            await fetch('/api/qr/count', { method: 'POST' });
         } catch (e) {
             console.error(e);
             error = 'Failed to generate QR code';
@@ -127,8 +130,15 @@
 </script>
 
 <svelte:head>
-    <title>QR Code | NoTracer</title>
-    <meta name="description" content={t('qr.description')} />
+    <title>QR Code Generator | NoTracer - Anonymous, No Tracking</title>
+    <meta name="description" content="Generate privacy-first QR codes. No registration, no tracking, no metadata. Create anonymous QR codes locally in your browser." />
+    <meta property="og:title" content="QR Code Generator | NoTracer" />
+    <meta property="og:description" content="Generate anonymous QR codes without tracking. Zero logs, no metadata." />
+    <meta property="og:image" content="https://notracer.com/og-image.png" />
+    <meta name="twitter:title" content="QR Code Generator | NoTracer" />
+    <meta name="twitter:description" content="Generate anonymous QR codes without tracking." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://notracer.com/qr" />
 </svelte:head>
 
 <div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
@@ -145,6 +155,9 @@
         </h1>
         <p class="text-gray-500 text-sm md:text-base max-w-xl mx-auto">
             {t('qr.subtitle')}
+        </p>
+        <p class="text-neon text-xs font-mono tracking-widest mt-2">
+            [{totalGenerated.toLocaleString()} QR CODES GENERATED]
         </p>
     </div>
 

@@ -105,7 +105,7 @@
                 {t('landing.select_module')}
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- CARD 1: LINK_PURGER -->
                 <div class="border border-gray-800 border-t-neon bg-[#080808] p-6 flex flex-col hover:border-neon/50 transition-colors group">
                     <div class="flex justify-between items-center text-xs tracking-widest mb-6 text-gray-600">
@@ -117,7 +117,7 @@
                         </div>
                     </div>
                     
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-neon transition-colors">{t('landing.m1_title')}</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-white transition-colors">{t('landing.m1_title')}</h2>
                     
                     <p class="text-gray-500 text-sm leading-relaxed mb-8 flex-1">
                         {t('landing.m1_desc')}
@@ -131,7 +131,7 @@
                         <span class="text-gray-600">+100 XP</span>
                     </div>
 
-                    <a href="/link" class="block w-full border border-neon/50 bg-neon/10 hover:bg-neon hover:text-black text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
+                    <a href="/link" class="block w-full border border-neon/50 bg-neon/10 hover:border-neon hover:bg-neon/20 text-neon hover:text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
                         {t('landing.deploy_now')}
                     </a>
                 </div>
@@ -147,7 +147,7 @@
                         </div>
                     </div>
                     
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-neon transition-colors">{t('landing.m2_title')}</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-white transition-colors">{t('landing.m2_title')}</h2>
                     
                     <p class="text-gray-500 text-sm leading-relaxed mb-8 flex-1">
                         {t('landing.m2_desc')}
@@ -161,7 +161,7 @@
                         <span class="text-gray-600">+250 XP</span>
                     </div>
 
-                    <a href="/media" class="block w-full border border-neon/50 bg-neon/10 hover:bg-neon hover:text-black text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
+                    <a href="/media" class="block w-full border border-neon/50 bg-neon/10 hover:border-neon hover:bg-neon/20 text-neon hover:text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
                         {t('landing.deploy_now')}
                     </a>
                 </div>
@@ -209,7 +209,7 @@
                         </div>
                     </div>
                     
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-neon transition-colors">{t('landing.m4_title')}</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-white transition-colors">{t('landing.m4_title')}</h2>
                     
                     <p class="text-gray-500 text-sm leading-relaxed mb-8 flex-1">
                         {t('landing.m4_desc')}
@@ -223,7 +223,7 @@
                         <span class="text-gray-600">+100 XP</span>
                     </div>
                     
-                    <a href="/qr" class="block w-full border border-neon/50 bg-neon/10 hover:bg-neon hover:text-black text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
+                    <a href="/qr" class="block w-full border border-neon/50 bg-neon/10 hover:border-neon hover:bg-neon/20 text-neon hover:text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
                         {t('landing.deploy_now')}
                     </a>
                 </div>
@@ -239,7 +239,7 @@
                         </div>
                     </div>
                     
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-neon transition-colors">{t('landing.m5_title')}</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-wider mb-4 group-hover:text-white transition-colors">{t('landing.m5_title')}</h2>
                     
                     <p class="text-gray-500 text-sm leading-relaxed mb-8 flex-1">
                         {t('landing.m5_desc')}
@@ -253,7 +253,7 @@
                         <span class="text-gray-600">+150 XP</span>
                     </div>
 
-                    <a href="/speedtest" class="block w-full border border-neon/50 bg-neon/10 hover:bg-neon hover:text-black text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
+                    <a href="/speedtest" class="block w-full border border-neon/50 bg-neon/10 hover:border-neon hover:bg-neon/20 text-neon hover:text-neon text-center py-3 font-bold uppercase tracking-widest transition-all text-xs">
                         {t('landing.deploy_now')}
                     </a>
                 </div>

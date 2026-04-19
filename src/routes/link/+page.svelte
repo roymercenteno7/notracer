@@ -29,22 +29,27 @@
 </script>
 
 <svelte:head>
-	<title>Link Purger | NoTracer</title>
-	<meta name="description" content={t('home.hero_stat') + ' - Limpia parásitos de rastreo de las URLs antes de compartir.'} />
-	<meta property="og:title" content="Link Purger | NoTracer" />
-	<meta property="og:url" content="https://notracer.com/link" />
-	<script type="application/ld+json">
-		{
-			"@context": "https://schema.org",
-			"@type": "WebApplication",
-			"name": "NoTracer Link Purger",
-			"url": "https://notracer.com/link",
-			"description": "Limpia parásitos de rastreo de las URLs antes de compartir. Elimina UTM, fbclid y más.",
-			"applicationCategory": "UtilitiesApplication",
-			"operatingSystem": "All"
-		}
-	</script>
-</svelte:head>
+ 	<title>Link Purger | NoTracer - Remove URL Trackers</title>
+ 	<meta name="description" content="Strip tracking parameters from any URL. Remove UTM, fbclid, gclid, and 50+ trackers. Share clean links with zero metadata leakage." />
+ 	<meta property="og:title" content="Link Purger | NoTracer" />
+ 	<meta property="og:description" content="Strip tracking parameters from any URL. Remove UTM, fbclid, gclid, and 50+ trackers." />
+ 	<meta property="og:url" content="https://notracer.com/link" />
+ 	<meta name="twitter:title" content="Link Purger | NoTracer" />
+ 	<meta name="twitter:description" content="Remove URL trackers. Strip UTM, fbclid, gclid." />
+ 	<meta name="twitter:card" content="summary_large_image" />
+ 	<link rel="canonical" href="https://notracer.com/link" />
+ 	<script type="application/ld+json">
+ 		{
+ 			"@context": "https://schema.org",
+ 			"@type": "WebApplication",
+ 			"name": "NoTracer Link Purger",
+ 			"url": "https://notracer.com/link",
+ 			"description": "Strip tracking parameters from any URL. Remove UTM, fbclid, gclid, and 50+ trackers.",
+ 			"applicationCategory": "UtilitiesApplication",
+ 			"operatingSystem": "All"
+ 		}
+ 	</script>
+ </svelte:head>
 
 <div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
 	[ {t('nav.status_beta')} ]

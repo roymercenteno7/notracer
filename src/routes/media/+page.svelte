@@ -108,8 +108,15 @@
 </script>
 
 <svelte:head>
-    <title>Media Shifter | NoTracer</title>
-    <meta name="description" content={t('media.description')} />
+    <title>Media Shifter | NoTracer - Convert to WebP</title>
+    <meta name="description" content="Convert images to WebP format. Remove EXIF metadata, GPS coordinates, and device information. Privacy-first image optimization." />
+    <meta property="og:title" content="Media Shifter | NoTracer" />
+    <meta property="og:description" content="Convert images to WebP. Remove all EXIF metadata." />
+    <meta property="og:image" content="https://notracer.com/og-image.png" />
+    <meta name="twitter:title" content="Media Shifter | NoTracer" />
+    <meta name="twitter:description" content="Convert images to WebP. Remove EXIF metadata." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://notracer.com/media" />
 </svelte:head>
 
 <div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">

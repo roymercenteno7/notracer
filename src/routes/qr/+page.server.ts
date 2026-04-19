@@ -1,4 +1,5 @@
 import { db } from '$lib/server/db';
+import { redis } from '$lib/server/redis';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -11,7 +12,15 @@ export const load: PageServerLoad = async ({ locals }) => {
         })
         : [];
 
-    return { qrCodes, user: locals.user ? { id: locals.user.id } : null };
+    let totalGenerated = 0;
+    try {
+        const count = await redis.get('notracer:qr:generated');
+        totalGenerated = parseInt(count?.toString() || '0');
+    } catch (e) {
+        console.error('[QR] Failed to get count', e);
+    }
+
+    return { qrCodes, user: locals.user ? { id: locals.user.id } : null, totalGenerated };
 };
 
 export const actions: Actions = {
