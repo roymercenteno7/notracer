@@ -6,62 +6,62 @@
 
 ---
 
-NoTracer es una **suite de herramientas de privacidad técnica**. Elimina rastreadores de URLs, convierte imágenes a WebP y mide tu velocidad de conexión sin analíticas.
+NoTracer is a **privacy-first toolkit suite** that strips tracker garbage from URLs, converts images to WebP, and measures your connection speed — all without analytics.
 
-## 🛡️ Módulos
+## Módulos
 
-| Módulo | Estado | Descripción |
+| Module | Status | Description |
 |--------|--------|-------------|
-| LINK_PURGER | ✅ | Elimina `utm_*`, `fbclid`, `gclid` y +50 vectores de tracking |
-| MEDIA_SHIFTER | ✅ | Convierte JPEG/PNG a WebP, elimina metadatos EXIF |
-| SPEED_TEST | ✅ | Mide ancho de banda sin terceros |
-| GHOST_SEND | 🔲 WIP | Mensajes efímeros con encriptación |
-| SECURE_QR | 🔲 WIP | Códigos QR con relevos de privacidad |
+| LINK_PURGER | READY | Removes `utm_*`, `fbclid`, `gclid` and +50 tracking vectors |
+| MEDIA_SHIFTER | READY | Converts JPEG/PNG to WebP, strips EXIF metadata |
+| SPEED_TEST | READY | Measures bandwidth without third parties |
+| GHOST_SEND | WIP | Ephemeral messages with encryption |
+| SECURE_QR | WIP | QR codes with privacy relays |
 
-## ⚡ Características
+## Características
 
-- **Estética Cyber-Terminal** — Minimalista, verde neón sobre negro
-- **Deep Clean Engine** — +50 reglas de rastreo para Amazon, Meta, TikTok, MercadoLibre, AliExpress
-- **Cacheo Redis** — Redirecciones en microsegundos via Upstash
-- **Autenticación Sin Password** — Login/Registro via OTP email
-- **Bot-Shield** — Cloudflare Turnstile integrado
-- **Zero Logs** — TTL agresivo, metadatos se incineran automáticamente
+- **Cyber-Terminal Aesthetic** — Minimalist, neon-green on black
+- **Deep Clean Engine** — +50 tracking rules for Amazon, Meta, TikTok, MercadoLibre, AliExpress
+- **Redis Cache** — Microsecond redirects via Upstash
+- **Passwordless Auth** — Login/Register via email OTP
+- **Bot-Shield** — Cloudflare Turnstile integrated
+- **Zero Logs** — Aggressive TTL, metadata auto-incinerated
 
-## 🛠 Stack
+## Stack
 
 - [SvelteKit 2](https://kit.svelte.dev/) — Full-stack framework
 - [Svelte 5](https://svelte.dev/) — UI
-- [Tailwind CSS 4](https://tailwindcss.com/) — Estilos
+- [Tailwind CSS 4](https://tailwindcss.com/) — Styles
 - [Prisma](https://www.prisma.io/) — ORM (PostgreSQL/Neon)
 - [Upstash Redis](https://upstash.com/) — Cache
-- [Sharp](https://sharp.pics/) — Procesamiento de imágenes
-- [Vercel](https://vercel.com/) — Despliegue
+- [Sharp](https://sharp.pics/) — Image processing
+- [Vercel](https://vercel.com/) — Deployment
 
-## 🚀 Instalación Local
+## Install
 
 ```bash
-# Clonar
-git clone https://github.com/roymercenteno7/notracer.git
+# Clone
+git clone https://github.com/ariroy/notracer.git
 cd notracer
 
-# Instalar
+# Install
 npm install
 
-# Configurar entorno
+# Setup environment
 cp .env.example .env
-# Edita .env con tus credenciales
+# Edit .env with your credentials
 
-# Build (genera Prisma Client)
+# Build (generates Prisma Client)
 npm run build
 
-# Inicializar DB
+# Initialize DB
 npx prisma db push
 
-# Ejecutar
+# Run
 npm run dev
 ```
 
-### Variables Requeridas
+### Required Environment Variables
 
 ```env
 # PostgreSQL (Neon)
@@ -71,30 +71,34 @@ DATABASE_URL="postgresql://..."
 UPSTASH_REDIS_REST_URL="https://xxxx.upstash.io"
 UPSTASH_REDIS_REST_TOKEN="AXxxxxx"
 
-# Opcional: Email SMTP
+# Cloudflare Turnstile
+PUBLIC_TURNSTILE_SITE_KEY="0x4AAAAAA..."
+TURNSTILE_SECRET_KEY="0x4AAAAAA..."
+
+# Optional: Email SMTP
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="465"
-SMTP_USER="tu@email.com"
+SMTP_USER="your@email.com"
 SMTP_PASS="password"
 ```
 
-## ☁️ Despliegue en Vercel
+## Deploy to Vercel
 
-1. Importa el repositorio en Vercel
-2. Configura las Environment Variables
-3. Deploy automático
+1. Import repository in Vercel
+2. Configure Environment Variables
+3. Automatic deploy
 
-NoTracer usa `@sveltejs/adapter-vercel` con SSR y Edge Functions.
+NoTracer uses `@sveltejs/adapter-vercel` with SSR and Edge Functions.
 
-## 🌐 Links
+## Links
 
 - **Web**: [notracer.com](https://notracer.com)
 - **Docs**: [docs/README.md](./docs/README.md)
 - **Email**: hello@notracer.com
 
-## 📜 Licencia
+## License
 
-MIT — Comparte el contenido. No tus datos.
+MIT — Share the content. Not your data.
 
 ---
 

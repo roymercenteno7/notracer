@@ -48,7 +48,7 @@
 		<section class="border-t border-gray-800 pt-8">
 			<h3 class="text-neon uppercase mb-4">{t('about.status_title')}</h3>
 			<div class="inline-block bg-neon text-black font-bold px-4 py-2 mb-4 text-sm tracking-widest uppercase">
-				{t('about.status_beta')}
+				{t('about.status')}
 			</div>
 			<p class="leading-relaxed text-sm text-gray-400">
 				{t('about.status_text')}

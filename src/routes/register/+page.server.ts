@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { PUBLIC_BETA, PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 import { env as secretEnv } from '$env/dynamic/private';
 import { redis } from '$lib/server/redis';
 import { sendOTPEmail } from '$lib/server/email';
@@ -12,9 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         throw redirect(302, '/');
     }
 
-    // Using a safe fallback if the site key isn't public yet
     return {
-        isBetaOpen: PUBLIC_BETA === 'true',
         turnstileKey: PUBLIC_TURNSTILE_SITE_KEY
     };
 };
@@ -24,10 +22,6 @@ export const actions = {
         const data = await request.formData();
         const email = data.get('email')?.toString()?.trim()?.toLowerCase();
         const turnstileToken = data.get('cf-turnstile-response')?.toString();
-
-        if (PUBLIC_BETA !== 'true') {
-            return fail(403, { email, error: 'Public registration is currently offline.' });
-        }
 
         if (!email || !email.includes('@')) {
             return fail(400, { email, error: 'Invalid email address.' });
@@ -43,7 +37,7 @@ export const actions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
-                    secret: secretEnv.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
+                    secret: secretEnv.TURNSTILE_SECRET_KEY,
                     response: turnstileToken
                 })
             });

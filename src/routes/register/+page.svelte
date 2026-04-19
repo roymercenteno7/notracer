@@ -9,7 +9,6 @@
 	let turnstileContainer: HTMLDivElement | undefined = $state();
 	let widgetId: string | undefined = $state();
 	
-	let isBetaOpen = $derived(data.isBetaOpen);
 	let PUBLIC_TURNSTILE_SITE_KEY = $derived(data.turnstileKey);
 
     let currentStep = $derived(form?.step || 'request');
@@ -81,22 +80,13 @@
 		</div>
 
 		<div class="bg-gray-950/50 border border-gray-900 p-8 space-y-8 backdrop-blur-sm">
-            {#if !isBetaOpen}
-                <div class="text-yellow-500 border border-yellow-900/50 bg-yellow-950/30 px-4 py-8 rounded font-mono text-sm text-center space-y-4">
-                    <p class="text-lg font-bold">[SYSTEM_OFFLINE]</p>
-                    <p class="text-xs text-gray-500 uppercase tracking-widest">Public registration is currently unavailable.</p>
-                    <div class="pt-6">
-                        <a href="/login" class="bg-gray-900 border border-gray-800 hover:border-neon text-gray-300 hover:text-neon px-8 py-3 transition-colors uppercase font-bold text-xs inline-block">GO_TO_LOGIN_PAGE →</a>
-                    </div>
+            {#if form?.error}
+                <div class="text-red-500 border border-red-900 bg-red-950/30 px-4 py-3 rounded font-mono text-sm text-center">
+                    [FAILURE] {form.error}
                 </div>
-            {:else}
-                {#if form?.error}
-                    <div class="text-red-500 border border-red-900 bg-red-950/30 px-4 py-3 rounded font-mono text-sm text-center">
-                        [FAILURE] {form.error}
-                    </div>
-                {/if}
+            {/if}
 
-                {#if currentStep === 'request'}
+            {#if currentStep === 'request'}
                     <form 
                         action="?/sendCode"
                         method="POST" 
@@ -190,7 +180,6 @@
                         </div>
                     </form>
                 {/if}
-            {/if}
         </div>
 
         <p class="text-center font-mono text-xs text-gray-700 uppercase tracking-widest">

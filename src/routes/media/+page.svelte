@@ -120,7 +120,7 @@
 </svelte:head>
 
 <div class="absolute top-4 right-4 border border-neon text-neon font-mono text-xs px-3 py-1 bg-black/80 backdrop-blur-sm z-50 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
-    [ {t('nav.status_beta')} ]
+    [ {t('nav.status')} ]
 </div>
 
 <div class="w-full max-w-4xl mx-auto flex flex-col gap-8">

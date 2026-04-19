@@ -14,7 +14,7 @@
         "login": "Acceder",
         "register": "Registrarse",
         "logout": "Salir",
-        "status_beta": "ESTADO DEL SISTEMA: BETA 1.0",
+        "status": "ESTADO DEL SISTEMA: ONLINE",
         "blog": "Boletines"
     },
     "home": {
@@ -91,7 +91,7 @@
         "no_analytics": "SIN ANALÍTICA EXTENDIDA.",
         "philosophy_footer": "El proceso de desinfección es estrictamente volátil. Las URLs contaminadas originales nunca se almacenan de forma permanente, excepto como punteros efímeros en Redis. Los datos de caché se incineran automáticamente.",
         "status_title": "Estado del Sistema:",
-        "status_beta": "[ BETA DE INGENIERÍA ]",
+        "status": "[ INGENIERÍA ]",
         "status_text": "Esta plataforma sirve como una iniciativa de ingeniería abierta dedicada a construir una infraestructura web más limpia y ética.",
         "contact_title": "Contacto / Comunicaciones:",
         "support": "[ Soporte / Feedback ]",
@@ -108,8 +108,8 @@
         "q3": "¿Cómo sé que no están rastreando mis clics?",
         "a3": "Nuestra arquitectura se basa en una filosofía Zero-Knowledge. Utilizamos SvelteKit y un caché Redis volátil con límites agresivos de TTL (tiempo de vida). Los metadatos se incineran automáticamente. No hay bases de datos que almacenen tu historial de navegación.",
         "q4": "¿Es seguro para banca o enlaces privados?",
-        "a4": "Solo desinfectamos los metadatos de las URLs públicas. NoTracer nunca toca contenido encriptado, credenciales o cargas seguras. Sin embargo, como beta activa, recomendamos usarlo principalmente para desinfectar enlaces de redes sociales y comercio electrónico.",
-        "q5": "¿Cuál es el futuro de esta Beta?",
+        "a4": "Solo desinfectamos los metadatos de las URLs públicas. NoTracer nunca toca contenido encriptado, credenciales o cargas seguras. Recomendamos usarlo principalmente para desinfectar enlaces de redes sociales y comercio electrónico.",
+        "q5": "¿Cuál es el futuro de NoTracer?",
         "a5": "Los scripts de rastreo agresivos de plataformas como TikTok o Instagram evolucionan a diario. Actualizaremos continuamente nuestros patrones del Motor de Limpieza Profunda para contrarrestar nuevas técnicas de vigilancia, asegurando que tus enlaces permanezcan prístinos."
     },
     "landing": {
@@ -122,6 +122,7 @@
         "operational": "OPERATIVO",
         "protocol": "PROTOCOLO:",
         "zero_log": "ZERO_LOG_V2",
+        "view_source": "VER_CÓDIGO_FUENTE",
         "encryption": "ENCRIPTACIÓN:",
         "select_module": "> SELECCIONAR_MÓDULO_MISIÓN",
         "blocked": "BLOQUEADO",

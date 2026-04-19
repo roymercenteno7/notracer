@@ -15,7 +15,7 @@
         "register": "Register",
         "blog": "Bulletins",
         "logout": "Logout",
-        "status_beta": "SYSTEM STATUS: BETA 1.0"
+        "status": "SYSTEM STATUS: ONLINE"
     },
     "home": {
         "hero_stat": "Global Trackers Eliminated",
@@ -89,7 +89,7 @@
         "no_analytics": "NO EXTENDED ANALYTICS.",
         "philosophy_footer": "The sanitization process is strictly volatile. Original contaminated URLs are never permanently stored except as ephemeral pointers in Redis. Cache data is automatically incinerated.",
         "status_title": "System Status:",
-        "status_beta": "[ ENGINEERING BETA ]",
+        "status": "[ ENGINEERING ]",
         "status_text": "This platform serves as an open engineering initiative dedicated to building a cleaner, more ethical web infrastructure.",
         "contact_title": "Contact / Comms:",
         "support": "[ Support / Feedback ]",
@@ -106,8 +106,8 @@
         "q3": "How do I know you aren't tracking my clicks?",
         "a3": "Our architecture is built on a Zero-Knowledge philosophy. We use SvelteKit and a volatile Redis cache with aggressive TTL (Time to Live) limits. Metadata is incinerated automatically. There are no databases storing your browsing history.",
         "q4": "Is it safe for banking or private links?",
-        "a4": "We only sanitize public URL metadata. NoTracer never touches encrypted content, credentials, or secure payloads. However, as an active beta, we recommend using it primarily for sanitizing social media and e-commerce links.",
-        "q5": "What is the future of this Beta?",
+        "a4": "We only sanitize public URL metadata. NoTracer never touches encrypted content, credentials, or secure payloads. We recommend using it primarily for sanitizing social media and e-commerce links.",
+        "q5": "What is the future of NoTracer?",
         "a5": "Aggressive tracking scripts from platforms like TikTok or Instagram evolve daily. We will continually update our Deep-Clean Engine patterns to counter new surveillance techniques, ensuring your links remain pristine."
     },
     "landing": {
@@ -120,6 +120,7 @@
         "operational": "OPERATIONAL",
         "protocol": "PROTOCOL:",
         "zero_log": "ZERO_LOG_V2",
+        "view_source": "VIEW_SOURCE_CODE",
         "encryption": "ENCRYPTION:",
         "select_module": "> SELECT_MISSION_MODULE",
         "blocked": "BLOCKED",

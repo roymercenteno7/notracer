@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { PUBLIC_BETA, PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 import { env as secretEnv } from '$env/dynamic/private';
 import { redis } from '$lib/server/redis';
 import { sendOTPEmail } from '$lib/server/email';
@@ -13,7 +13,6 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
 
     return {
-        isBetaOpen: PUBLIC_BETA === 'true',
         turnstileKey: PUBLIC_TURNSTILE_SITE_KEY
     };
 };
@@ -38,7 +37,7 @@ export const actions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
-                    secret: secretEnv.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
+                    secret: secretEnv.TURNSTILE_SECRET_KEY,
                     response: turnstileToken
                 })
             });
